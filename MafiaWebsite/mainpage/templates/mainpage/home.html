@@ -1,0 +1,40 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+
+{% block title %}
+Mafia
+{% endblock %}
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'mainpage/css/home.css' %}" />
+{% endblock %}
+
+{% block body %}
+
+<div class="lights-container">
+    <div class="redlight"></div>
+    <div class="bluelight"></div>
+</div>
+
+
+<div class="content">
+    <h2 class="text" data-text="MAFIA">
+       MAFIA
+    </h2>
+ </div>
+
+ <section>
+    <a href="#" class="login" data-text="Login">Login</a>
+  </section>
+
+  <section>
+    <a href="#" class="register" data-text="Login">Register</a>
+  </section>
+
+<img class="background-image" src="{% static 'mainpage/img/mainpageimg.jpg' %}" alt="Background Image">
+
+
+
+
+{% endblock %}
