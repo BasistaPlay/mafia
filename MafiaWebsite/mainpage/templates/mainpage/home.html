@@ -25,11 +25,11 @@ Mafia
  </div>
 
  <section>
-    <a href="#" class="login" data-text="Login">Login</a>
+    <a href="{% url 'login' %}" class="login" data-text="Login">Login</a>
   </section>
 
   <section>
-    <a href="#" class="register" data-text="Login">Register</a>
+    <a href="{% url 'register' %}" class="register" data-text="Login">Register</a>
   </section>
 
 <img class="background-image" src="{% static 'mainpage/img/mainpageimg.jpg' %}" alt="Background Image">

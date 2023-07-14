@@ -34,12 +34,24 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'jazzmin',
     'django.contrib.admin',
-    'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # my apps
     'mainpage',
+
+    #alauth apps
+
+    'django.contrib.auth',
+    'django.contrib.messages',
+    'django.contrib.sites',
+
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.facebook',
 ]
 
 MIDDLEWARE = [
@@ -110,11 +122,18 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTHENTICATION_BACKENDS = [
+    # Needed to login by username in Django admin, regardless of `allauth`
+    'django.contrib.auth.backends.ModelBackend',
+
+    # `allauth` specific authentication methods, such as login by e-mail
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = 'lv-lv'
+LANGUAGE_CODE = 'en-en'
 
 TIME_ZONE = 'Europe/Riga'
 
@@ -146,7 +165,7 @@ JAZZMIN_SETTINGS = {
     'welcome_sign': 'Welcome to Mafia',  # Customize the welcome message
     'show_sidebar': True,  # Show the sidebar menu
     'navigation_expanded': True,  # Expand all sections in the sidebar menu
-    'hide_apps': ['auth', """'sites'"""],  # Hide specific apps from the admin sidebar
+    'hide_apps': [ """'sites'"""],  # Hide specific apps from the admin sidebar
     'show_ui_builder': False,  # Hide the UI Builder link in the top menu
     'topmenu_links': [],  # Remove any custom links from the top menu
     'usermenu_links': [],  # Remove any custom links from the user menu
@@ -157,3 +176,36 @@ JAZZMIN_SETTINGS = {
     },
     # ... other customization options ...
 }
+
+# SOCIALACCOUNT_PROVIDERS = {
+#     'google': {
+#         'APP': {
+#             'client_id': 'YOUR_GOOGLE_CLIENT_ID',
+#             'secret': 'YOUR_GOOGLE_CLIENT_SECRET',
+#         },
+#         'SCOPE': ['profile', 'email'],
+#         'AUTH_PARAMS': {
+#             'access_type': 'online',
+#         }
+#     },
+#     'facebook': {
+#         'APP': {
+#             'client_id': 'YOUR_FACEBOOK_CLIENT_ID',
+#             'secret': 'YOUR_FACEBOOK_CLIENT_SECRET',
+#         },
+#         'SCOPE': ['email'],
+#         'METHOD': 'js_sdk',
+#         'VERIFIED_EMAIL': False,
+#         'VERSION': 'v9.0',
+#     },
+# }
+
+SITE_ID = 1
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.example.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'basistaplay@gmail.com'
+EMAIL_HOST_PASSWORD = 'EdisPedis!@#123'
+
