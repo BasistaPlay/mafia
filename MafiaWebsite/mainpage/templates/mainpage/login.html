@@ -68,6 +68,15 @@ Mafia | Login
         </div>
     {% endif %}
 
+    {% if successful_messages %}
+    {% for successful_message in successful_messages %}
+        <div class="successful_messages">
+            <span class="error-messages">{{ successful_message }}</span>
+            <br>
+        </div>
+    {% endfor %}
+{% endif %}
+
 {% comment %} </div>
 
 {% for field in form %}

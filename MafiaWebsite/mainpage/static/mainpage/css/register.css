@@ -281,6 +281,16 @@ body {
     background-color: #f90b0b9d;
     border: 1px solid #fcc2c3;
     padding: 20px 30px;
+    margin-bottom: 10px; /* Pievieno atstarpi starp kļūdasW ziņojumiem */
+    clear: both; /* Notīra peldošo efektu, lai kļūdas ziņojumi nepārklājas ar citiem elementiem */
+    width: 470px;
+    left: 65%;
+  }
+  .successful_messages{
+	position: relative;
+    background-color: #1ff90b9d;
+    border: 1px solid #c6fcc2;
+    padding: 20px 30px;
     margin-bottom: 10px; /* Pievieno atstarpi starp kļūdas ziņojumiem */
     clear: both; /* Notīra peldošo efektu, lai kļūdas ziņojumi nepārklājas ar citiem elementiem */
     width: 470px;

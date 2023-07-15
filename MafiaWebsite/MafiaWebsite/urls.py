@@ -18,6 +18,8 @@ from django.contrib import admin
 from django.urls import path, include
 from mainpage.views import *
 from django.contrib.auth import views as auth_views
+from mainpage import views
+from allauth.account.views import confirm_email
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -33,6 +35,6 @@ urlpatterns = [
     path('reset/done/', auth_views.PasswordResetCompleteView.as_view(template_name='registration/password_reset_complete.html'), name='password_reset_complete'),
 
     #verifikacija epasta
-    
+    path('activate/<str:uidb64>/<str:token>/', views.activate, name='activate'),
 
 ]

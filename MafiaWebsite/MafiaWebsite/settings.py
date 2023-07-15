@@ -37,9 +37,14 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.staticfiles',
+    'django_cron',
+    
 
     # my apps
+
     'mainpage',
+    
+
 
     #alauth apps
 
@@ -52,6 +57,9 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.facebook',
+
+    #laiks
+     'django_celery_beat',
 ]
 
 MIDDLEWARE = [
@@ -177,35 +185,18 @@ JAZZMIN_SETTINGS = {
     # ... other customization options ...
 }
 
-# SOCIALACCOUNT_PROVIDERS = {
-#     'google': {
-#         'APP': {
-#             'client_id': 'YOUR_GOOGLE_CLIENT_ID',
-#             'secret': 'YOUR_GOOGLE_CLIENT_SECRET',
-#         },
-#         'SCOPE': ['profile', 'email'],
-#         'AUTH_PARAMS': {
-#             'access_type': 'online',
-#         }
-#     },
-#     'facebook': {
-#         'APP': {
-#             'client_id': 'YOUR_FACEBOOK_CLIENT_ID',
-#             'secret': 'YOUR_FACEBOOK_CLIENT_SECRET',
-#         },
-#         'SCOPE': ['email'],
-#         'METHOD': 'js_sdk',
-#         'VERIFIED_EMAIL': False,
-#         'VERSION': 'v9.0',
-#     },
-# }
-
 SITE_ID = 1
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.example.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'basistaplay@gmail.com'
-EMAIL_HOST_PASSWORD = 'EdisPedis!@#123'
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'mafiagameeee@gmail.com'
+EMAIL_HOST_PASSWORD = 'hjmyxkzttzahgfib'
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = 'mafiagameeee@gmail.com'
+
+
+CRON_CLASSES = [
+    'mainpage.cron.DeleteUnverifiedProfilesCronJob',
+]
