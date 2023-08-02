@@ -11,6 +11,9 @@ from django.utils.encoding import force_bytes, force_str
 from mainpage.models import Profile
 from django.utils import timezone
 from django.core.management import call_command
+from django.conf import settings
+from django.utils.html import strip_tags
+
 
 # Create your views here.
 
@@ -100,12 +103,76 @@ def login_view(request):
 
         if user is not None:
             login(request, user)
-            # Veikt nepieciešamos pasākumus, lai pārsūtītu lietotāju uz profilu
-            return redirect('home')  # Aizvietojiet 'profile' ar sava profila ceļu
+            return redirect('menu')
         else:
-            # Apstrādājiet nepareizu lietotājvārdu un/vai paroli
-            return render(request, 'mainpage/login.html', {'error': 'Invalid username or password. Please try again.'})
+            error_message = 'Invalid username or password. Please try again.'
+            return render(request, 'mainpage/login.html', {'error_message': error_message})
     else:
         return render(request, 'mainpage/login.html')
     
-    
+
+def forgot_password(request):
+    error_messages = []
+    if request.method == 'POST':
+        email = request.POST['email']
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            error_messages.append('The email address does not exist.')
+            return render(request, 'forgetpassword/forgot_password.html', {'error_messages': error_messages})
+
+        if user is not None:
+            # Generate password reset token and link
+            token = default_token_generator.make_token(user)
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            reset_link = request.build_absolute_uri(f'/reset_password/{uid}/{token}/')
+
+            # Render the HTML email template
+            html_message = render_to_string('forgetpassword/password_reset_email.html', {
+                'reset_link': reset_link,
+                'username': user.username
+            })
+
+            # Strip HTML tags from the message
+            plain_message = strip_tags(html_message)
+
+            # Send password reset email
+            subject = 'Password Reset Request'
+            send_mail(subject, plain_message, settings.EMAIL_HOST_USER, [email], html_message=html_message)
+
+        return render(request, 'forgetpassword/password_reset_sent.html')
+
+    return render(request, 'forgetpassword/forgot_password.html')
+
+def reset_password(request, uidb64, token):
+    error_messages = []
+    success_message = ""
+
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+
+    if user is not None and default_token_generator.check_token(user, token):
+        if request.method == 'POST':
+            # Process the password reset form
+            password1 = request.POST.get('password1', '')
+            password2 = request.POST.get('password2', '')
+
+            if password1 and password2:
+                if password1 == password2:
+                    user.set_password(password1)
+                    user.save()
+                    success_message = "Your password has been successfully changed. Please login with your new password."
+                    return render(request, 'mainpage/login.html', {'success_message': success_message})
+                else:
+                    error_messages.append("The passwords you entered do not match.")
+            else:
+                error_messages.append("Please enter a valid password.")
+        else:
+            return render(request, 'forgetpassword/reset_password.html', {'error_messages': error_messages})
+
+    return render(request, 'forgetpassword/reset_password.html', {
+        'error_messages': error_messages,
+    })

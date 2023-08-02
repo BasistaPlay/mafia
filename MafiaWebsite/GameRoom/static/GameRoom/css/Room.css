@@ -1,0 +1,199 @@
+body {
+    background-color: #101010;
+    color: #fff;
+    font-family: Arial, sans-serif;
+    display: flex;
+    overflow: hidden;
+  }
+
+.lights-container{
+	display: table;
+	width: 100%;
+	height: 100%;
+	animation: rotate 1s infinite;
+}
+
+@keyframes redlight{
+	0%{opacity: 1;}
+	60%{opacity: 1;}
+	65%{opacity: 0;}
+	70%{opacity: 1;}
+	75%{opacity: 0;}
+	80%{opacity: 1;}
+	90%{opacity: 0;}
+	100%{opacity: 1;}
+}
+
+@keyframes bluelight{
+	0%{opacity: 1;}
+	10%{opacity: 0;}
+	15%{opacity: 1;}
+	20%{opacity: 0;}
+	25%{opacity: 1;}
+	30%{opacity: 0;}
+	40%{opacity: 1;}
+	100%{opacity: 1;}
+}
+
+@keyframes redlight-small{
+	0%{opacity: 1;}
+	60%{opacity: 1;}
+	70%{opacity: 0;}
+	80%{opacity: 1;}
+	90%{opacity: 0;}
+	100%{opacity: 1;}
+}
+
+@keyframes bluelight-small{
+	0%{opacity: 1;}
+	10%{opacity: 0;}
+	20%{opacity: 1;}
+	30%{opacity: 0;}
+	40%{opacity: 1;}
+	100%{opacity: 1;}
+}
+
+.redlight,.bluelight{
+	width: 100%;
+	height: 150%;
+	border-radius: 50%;
+	display: table-cell;
+	vertical-align: middle;
+	position: absolute;
+	/* top: -25% !important; */
+}
+
+.redlight-small,.bluelight-small{
+	width: 1090px;
+	height: 400px;
+	border-radius: 50%;
+	display: table-cell;
+	vertical-align: middle;
+	position: absolute;
+}
+
+.redlight{
+	background-color: red;
+	background: radial-gradient( rgba(255, 0, 0, 0.5) 0%, transparent 67% ,transparent 100%);
+	animation: redlight 1s infinite;
+	right: 40%;
+	bottom: -50%;
+}
+
+.bluelight{
+	background-color: blue;
+	background: radial-gradient( rgba(0, 0, 255, 0.5) 0%, transparent 67% ,transparent 100%);
+	animation: bluelight 1s infinite;
+	left: 40%;
+	top: -50%;
+}
+
+.redlight-small{
+	background-color: red;
+	background: radial-gradient( rgba(255, 0, 0, 0.25) 0%, transparent 67% ,transparent 100%);
+	animation: redlight-small 0.7s infinite;
+	right: -366px;
+	bottom: -200px;
+	transform: rotate(-10deg);
+}
+
+.bluelight-small{
+	background-color: blue;
+	background: radial-gradient( rgba(0, 0, 255, 0.25) 0%, transparent 67% ,transparent 100%);
+	animation: bluelight-small 0.7s infinite;
+	left: -300px;
+	top: -300px;
+	transform: rotate(-45deg);
+}
+
+#room-container{
+    height: auto;
+    width: 600px;
+    background-color: rgba(255, 255, 255, 0.13);
+    position: absolute;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 40px rgba(8, 7, 16, 0.6);
+    padding: 0 50px;
+}
+
+.room{
+    text-align: center;
+    font-size: 42px;
+}
+
+#chat-messages {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    border-radius: 0 0 0 15px;
+    background-color: rgba(0, 0, 0, 0.279); /* Caurspīdīgs tumšs fons */
+    padding: 10px;
+    width: 300px; /* Piešķirt čata logam fiksētu platumu */
+  }
+
+  #send-button {
+    margin-top: 10px;
+  }
+
+  #chat-messages {
+    max-height: 400px; /* Ierobežo loga augstumu, lai tas nekļūtu pārāk augsts */
+    max-width: 800px;
+    overflow-x: auto; /* Rāda vertikālo ritjoslu, ja sasniegts maksimālais augstums */
+    border: 1px solid #100202; /* Iestatīt apmales līniju ap chat logu */
+    padding: 10px; /* Ievieto spoguli apkārt chat logam */
+  }
+  
+  .Chats {
+    margin-bottom: 10px; /* Atstarpē starp atsevišķām čatu rindām */
+  }
+  
+  /* Stilizēt Admin vārdu */
+  .Chats strong {
+    color: #cc3333;
+  }
+  
+  /* Stilizēt čatu tekstu */
+  .Chats {
+    background-color: #00000061;
+    padding: 5px;
+    border-radius: 5px;
+    max-width: 300px;
+  }
+
+  #message-input {
+    padding: 8px;
+    font-size: 16px;
+    border: 1px solid #ff1b22;
+    border-radius: 5px;
+    width: 300px;
+    margin-right: 10px;
+    background-color:#10020271;
+    color: #fff;
+  }
+  
+  /* CSS stils sūtīšanas pogai */
+  #send-button {
+    padding: 8px 20px;
+    font-size: 16px;
+    background-color: #cc3333;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  /* CSS stils sūtīšanas pogai, kad tiek nospiežama */
+  #send-button:hover {
+    background-color: #7b2121;
+  }
+
+  .input{
+    z-index: 1;
+  }
+
+  

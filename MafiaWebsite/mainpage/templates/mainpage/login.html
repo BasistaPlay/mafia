@@ -42,7 +42,7 @@ Mafia | Login
             </span>
         </div>
 
-        <a href="{% url 'password_reset' %}" class="forget" title="Forgot your password">Forgot your password</a>
+        <a href="{% url 'forgot_password' %}" class="forget" title="Forgot your password">Forgot your password</a>
     
         <button type="submit" class="testing" data-text="Register">Login</button>
         <a href="{% url 'register' %}" class="testing" data-text="Login">Register</a>
@@ -61,17 +61,17 @@ Mafia | Login
     
     
 
-    {% if error %}
-        <div class="error-message">
-            <span class="error-item">{{ error }}</span>
-            <br>
-        </div>
-    {% endif %}
 
-    {% if successful_messages %}
+
+    {% if error_message %}
+    <div class="error-message">
+        <span class="error-item">{{ error_message }}</span>
+        <br>
+    </div>
+{% else %}
     {% for successful_message in successful_messages %}
-        <div class="successful_messages">
-            <span class="error-messages">{{ successful_message }}</span>
+        <div class="successful-messages">
+            <span class="successful-message">{{ successful_message }}</span>
             <br>
         </div>
     {% endfor %}

@@ -37,12 +37,14 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.staticfiles',
-    'django_cron',
+    'channels',
     
 
     # my apps
 
     'mainpage',
+    'GameRoom',
+    'game',
     
 
 
@@ -58,8 +60,6 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.facebook',
 
-    #laiks
-     'django_celery_beat',
 ]
 
 MIDDLEWARE = [
@@ -196,7 +196,5 @@ EMAIL_HOST_PASSWORD = 'hjmyxkzttzahgfib'
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = 'mafiagameeee@gmail.com'
 
-
-CRON_CLASSES = [
-    'mainpage.cron.DeleteUnverifiedProfilesCronJob',
-]
+# Channels konfigurācija
+ASGI_APPLICATION = 'MafiaWebsite.routing.application'

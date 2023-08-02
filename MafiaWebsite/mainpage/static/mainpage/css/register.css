@@ -153,7 +153,9 @@ body {
   }
 
   form{
-      height: 650px;
+		height: auto;
+		margin-bottom: 20px;
+	  /* margin-bottom: 20px; */
       width: 400px;
       background-color: rgba(255,255,255,0.13);
       position: absolute;
@@ -172,6 +174,7 @@ body {
       letter-spacing: 0.5px;
       outline: none;
       border: none;
+	  height: calc(auto + 20px);
   }
   form h3{
       font-size: 32px;
@@ -256,6 +259,7 @@ body {
   .social{
     margin-top: 30px;
     display: flex;
+	padding-bottom: 30px;
   }
   .social div{
     background: red;
@@ -324,8 +328,9 @@ body {
 	  text-transform: uppercase;
 	  border: 1px solid hsla(0,0%,100%,.2);
 	  transition: all .2s ease;
-	  margin: 0 auto;
+	  margin: 0 auto 30px;
 	  margin-top: 30px;
+	  
 	
 	  &:before, 
 	  &:after {
@@ -427,11 +432,12 @@ body {
 	}
   }
   
+  
   .title{
 	font-family: monospace;
 	margin: auto;
 	color: white;
-	padding: 10%;;
+	padding: 10%;
   }
   
   #title{
@@ -535,6 +541,13 @@ body {
 	text-align: right;
 	margin-top: 15px;
   }
+
+  .forgett{
+	animation: glitch 1s linear infinite;
+	text-align: center;
+	margin-top: 15px;
+	padding-bottom: 20px;
+  }
   
   @keyframes glitch{
 	2%,64%{
@@ -560,6 +573,18 @@ body {
 	clip-path: polygon(0 0, 100% 0, 100% 33%, 0 33%);
 	-webkit-clip-path: polygon(0 0, 100% 0, 100% 33%, 0 33%);
   }
+  .forgett:before,
+  .forgett:after{
+	content: attr(title);
+	position: absolute;
+	right: 0;
+  }
+  
+  .forgett:before{
+	animation: glitchTop 1s linear infinite;
+	clip-path: polygon(0 0, 100% 0, 100% 33%, 0 33%);
+	-webkit-clip-path: polygon(0 0, 100% 0, 100% 33%, 0 33%);
+  }
   
   @keyframes glitchTop{
 	2%,64%{
@@ -574,6 +599,13 @@ body {
   }
   
   .forget:after{
+	animation: glitchBotom 1.5s linear infinite;
+	clip-path: polygon(0 67%, 100% 67%, 100% 100%, 0 100%);
+	-webkit-clip-path: polygon(0 67%, 100% 67%, 100% 100%, 0 100%);
+	text-align: right;
+  }
+
+  .forgett:after{
 	animation: glitchBotom 1.5s linear infinite;
 	clip-path: polygon(0 67%, 100% 67%, 100% 100%, 0 100%);
 	-webkit-clip-path: polygon(0 67%, 100% 67%, 100% 100%, 0 100%);

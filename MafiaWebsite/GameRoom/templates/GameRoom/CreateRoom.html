@@ -1,0 +1,53 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'GameRoom/css/CreateRoom.css' %}" />
+    
+{% endblock %}
+
+{% block body %}
+
+<div class="lights-container">
+  <div class="redlight"></div>
+  <div class="bluelight"></div>
+  <div class="redlight-small"></div>
+  <div class="bluelight-small"></div>
+
+
+<form action="{% url 'GameRoom:create_room' %}" method="POST" class="game-room-form">
+  <div class="title" id="title">Create Game Room</div>
+  {% csrf_token %}
+  
+  <div class="form-group">
+    <label for="player-count">Player Count:</label>
+    <div class="wrapper">
+      <span class="minus">-</span>
+      <span id="player-count" class="num">01</span>
+      <input id="player-count-input" name="player-count" type="number" style="display: none;">
+      <span class="plus">+</span>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="is-private">Private Room:</label>
+    <input type="checkbox" id="is-private" name="is_private">
+  </div>
+
+  <div id="password-container" class="form-group">
+    <label for="password">Password:</label>
+    <input type="password" id="password-field" name="password">
+  </div>
+
+  <button type="submit" class="button">Create Room</button>
+</form>
+
+</div>
+{% endblock %}
+
+{% block js %}
+
+<script src="{% static 'GameRoom/js/CreateRoom.js' %}"></script>
+<script src="{% static 'GameRoom/js/title.js' %}"></script>
+
+{% endblock %}

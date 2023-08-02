@@ -20,6 +20,8 @@ from mainpage.views import *
 from django.contrib.auth import views as auth_views
 from mainpage import views
 from allauth.account.views import confirm_email
+from GameRoom import views as GameRoom
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -29,12 +31,16 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),
 
     # Aizmirsu paroli
-    path('password_reset/', auth_views.PasswordResetView.as_view(template_name='registration/password_reset_form.html'), name='password_reset'),
-    path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(template_name='registration/password_reset_done.html'), name='password_reset_done'),
-    path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name='registration/password_reset_confirm.html'), name='password_reset_confirm'),
-    path('reset/done/', auth_views.PasswordResetCompleteView.as_view(template_name='registration/password_reset_complete.html'), name='password_reset_complete'),
+    path('forgot_password/', views.forgot_password, name='forgot_password'),
+    path('reset_password/<str:uidb64>/<str:token>/', views.reset_password, name='reset_password'),
 
     #verifikacija epasta
     path('activate/<str:uidb64>/<str:token>/', views.activate, name='activate'),
 
+    #GameRoom
+    path('menu/', GameRoom.menu, name='menu'),
+    path('game-room/', include('GameRoom.urls', namespace='GameRoom')),
+    path('logout/', GameRoom.logout_view, name='logout'),
+
 ]
+urlpatterns += staticfiles_urlpatterns()

@@ -1,0 +1,59 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}
+Mafia | Menu
+{% endblock %}
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'GameRoom/css/StartMenu.css' %}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+    
+{% endblock %}
+
+{% block body %}
+
+<div class="lights-container">
+    <div class="redlight"></div>
+    <div class="bluelight"></div>
+</div>
+
+<section class="user-profile">
+    <div class="profile-info">
+        <i class="fas fa-user"></i>
+      <p id="nickname">{{ nickname }}</p>
+    </div>
+    <button id="logout-button" class="hidden" data-text="Logout">
+        <a href="{% url 'logout' %}">Logout</a>
+      </button>
+  </section>
+
+<div class="content">
+    <h2 class="text" data-text="MAFIA">
+       MAFIA
+    </h2>
+</div>
+
+  
+
+<section>
+    <a href="{% url 'GameRoom:join_room' %}" class="button" data-text="Join Room">Join Room</a>
+</section>
+
+<section>
+    <a href="{% url 'GameRoom:create_room' %}" class="button" data-text="Create Room">Create Room</a>
+</section>
+
+<section>
+    <a href="" class="button" data-text="Instructions">Instructions</a>
+</section>
+
+<img class="background-image" src="{% static 'mainpage/img/mainpageimg.jpg' %}" alt="Background Image">
+
+{% endblock %}
+
+{% block js %}
+
+<script src="{% static 'GameRoom/js/StartMenu.js' %}"></script>
+
+{% endblock %}

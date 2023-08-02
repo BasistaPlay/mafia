@@ -1,0 +1,75 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'GameRoom/css/Room.css' %}" />
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+  integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ=="
+  crossorigin="anonymous"
+/>
+    
+{% endblock %}
+
+{% block body %}
+
+<div class="lights-container">
+  <div class="redlight"></div>
+  <div class="bluelight"></div>
+  <div class="redlight-small"></div>
+  <div class="bluelight-small"></div>
+</div>
+
+<div id="room-container">
+  <h1 class='room'>Room: {{ room.code }}</h1>
+  <div id="room-details">
+    <h2>Room Details</h2>
+    <h3>Number of players: <span id="player-count">{{ room.player_count }}</span></h3>
+    <p>Players:</p>
+    <ul id="player-list">
+      {% for player in players %}
+        <li class='player-list'>
+          {% if player.is_owner %}
+          <i class="fas fa-crown"></i>
+            <strong>{{ player.user.username }} (Owner)</strong>
+          {% else %}
+            {{ player.user.username }}
+            {% if not player.is_owner and player.user != request.user %}
+              <a href="{% url 'GameRoom:remove_player' room_code=room.code player_id=player.id %}" onclick="removePlayer({{ player.id }})">Remove</a>
+              <a href="{% url 'GameRoom:change_owner' room_code=room.code player_id=player.id %}">Assign as Owner</a>
+            {% endif %}
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+
+<!-- Izvadīt esošos čata ierakstus -->
+<div id="chat-messages">
+  {% for message in room.chat_set.all %}
+    <p><strong>{{ message.sender.username }}:</strong> {{ message.message }}</p>
+  {% endfor %}
+</div>
+<div class='input'>
+  <input type="text" id="message-input" placeholder="Type your message here...">
+  <button id="send-button">Send</button>
+</div>
+
+<!-- Ievietojiet div elementu ar id="room-code" un data-room-code atribūtu, kas satur istabas kodu -->
+<div id="room-code" data-room-code="{{ room.code }}" style="display: none;"></div>
+<!-- Ievietojiet div elementu ar id="current-username" un data-current-username atribūtu, kas satur pašreizējā lietotāja lietotājvārdu -->
+<div id="current-username" data-current-username="{{ request.user.username }}" style="display: none;"></div>
+
+<!-- Ielādēt jQuery bibliotēku -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="{% static 'GameRoom/js/chat.js' %}"></script>
+<script src="{% static 'GameRoom/js/player_list.js' %}"></script>
+
+<script>
+  // Izmantojiet setupChat funkciju, lai inicializētu čatu, un pārbaudiet un izdzēsiet istabu pēc noteiktā laika
+  setupChat("{{ room.code }}", "{{ csrf_token }}");
+</script>
+
+{% endblock %}
