@@ -1,6 +1,10 @@
 {% extends 'base/base.html' %}
 {% load static %}
 
+{% block title %}
+Mafia | Room
+{% endblock %}
+
 {% block css %}
 <link rel="stylesheet" href="{% static 'GameRoom/css/Room.css' %}" />
 <link
@@ -13,8 +17,8 @@
 {% endblock %}
 
 {% block body %}
-
-<div class="lights-container">
+<div id="overlay"></div>
+<div id="lights-container">
   <div class="redlight"></div>
   <div class="bluelight"></div>
   <div class="redlight-small"></div>
@@ -24,25 +28,34 @@
 <div id="room-container">
   <h1 class='room'>Room: {{ room.code }}</h1>
   <div id="room-details">
-    <h2>Room Details</h2>
-    <h3>Number of players: <span id="player-count">{{ room.player_count }}</span></h3>
+    <h2>Room Details:</h2>
+    <h3>Number of players: <span id="player-count">{{ room.player_count }} / {{room.max_players}}</span></h3>
     <p>Players:</p>
     <ul id="player-list">
       {% for player in players %}
-        <li class='player-list'>
+      <div id="player-ids" data-player-ids="{{ player_ids }}"></div>
+        <li class='player-list' data-player-id="{{ player.id }}">
+          <div class="hidden-player-id">{{ player.id }}</div>
+          <div id="room-code" data-room-code="{{ room.code }}" style="display: none;"></div>
+          <div id="current-username" data-current-username="{{ request.user.username }}" style="display: none;"></div>
           {% if player.is_owner %}
           <i class="fas fa-crown"></i>
             <strong>{{ player.user.username }} (Owner)</strong>
           {% else %}
             {{ player.user.username }}
             {% if not player.is_owner and player.user != request.user %}
-              <a href="{% url 'GameRoom:remove_player' room_code=room.code player_id=player.id %}" onclick="removePlayer({{ player.id }})">Remove</a>
-              <a href="{% url 'GameRoom:change_owner' room_code=room.code player_id=player.id %}">Assign as Owner</a>
+            <a href="#" class="remove-player-link" data-player-id="{{ player.id }}">Remove</a>
+            <a href="#" class="assign-owner-link" data-player-id="{{ player.id }}">Assign as Owner</a>
             {% endif %}
           {% endif %}
         </li>
       {% endfor %}
     </ul>
+
+    {% if room.player_count == room.max_players %}
+    
+    <button id="start-game-button">Start Game</button>
+    {% endif %}
   </div>
 </div>
 
@@ -52,7 +65,7 @@
     <p><strong>{{ message.sender.username }}:</strong> {{ message.message }}</p>
   {% endfor %}
 </div>
-<div class='input'>
+<div class='input' id='input'>
   <input type="text" id="message-input" placeholder="Type your message here...">
   <button id="send-button">Send</button>
 </div>
@@ -62,10 +75,15 @@
 <!-- Ievietojiet div elementu ar id="current-username" un data-current-username atribūtu, kas satur pašreizējā lietotāja lietotājvārdu -->
 <div id="current-username" data-current-username="{{ request.user.username }}" style="display: none;"></div>
 
+
 <!-- Ielādēt jQuery bibliotēku -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="{% static 'GameRoom/js/chat.js' %}"></script>
 <script src="{% static 'GameRoom/js/player_list.js' %}"></script>
+<script src="{% static 'GameRoom/js/player_exit.js' %}"></script>
+<script src="{% static 'GameRoom/js/room.js' %}"></script>
+
+
 
 <script>
   // Izmantojiet setupChat funkciju, lai inicializētu čatu, un pārbaudiet un izdzēsiet istabu pēc noteiktā laika

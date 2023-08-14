@@ -16,6 +16,8 @@ urlpatterns = [
     path('room/<str:room_code>/remove-player/<int:player_id>/', views.remove_player, name='remove_player'),
     path('change-owner/<str:room_code>/<int:player_id>/', views.change_owner, name='change_owner'),
     path('fetch-players/<str:room_code>/', views.fetch_players, name='fetch_players'),
-    path('get-room-list/', views.get_room_list, name='get_room_list'),
+    path('api/get_rooms/', views.get_rooms_api, name='get_rooms_api'),
+    path('check-user-status/', views.check_user_status, name='check_user_status'),
+    path('get_room_data/', views.get_room_data, name='get_room_data'),
 ]
 

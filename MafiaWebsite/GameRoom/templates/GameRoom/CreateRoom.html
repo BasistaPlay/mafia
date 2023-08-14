@@ -1,6 +1,10 @@
 {% extends 'base/base.html' %}
 {% load static %}
 
+{% block title %}
+Mafia | Create room
+{% endblock %}
+
 {% block css %}
     <link rel="stylesheet" href="{% static 'GameRoom/css/CreateRoom.css' %}" />
     
@@ -23,26 +27,28 @@
     <label for="player-count">Player Count:</label>
     <div class="wrapper">
       <span class="minus">-</span>
-      <span id="player-count" class="num">01</span>
-      <input id="player-count-input" name="player-count" type="number" style="display: none;">
+      <span id="player-count" class="num">07</span>
+      <input id="player-count-input" name="max_players" type="number" style="display: none;" value='07'>
       <span class="plus">+</span>
     </div>
   </div>
 
   <div class="form-group">
-    <label for="is-private">Private Room:</label>
+    <label for="is-private" disabled='true'>Private Room:</label>
     <input type="checkbox" id="is-private" name="is_private">
   </div>
 
   <div id="password-container" class="form-group">
     <label for="password">Password:</label>
-    <input type="password" id="password-field" name="password">
+    <input id="password-field" name="password" type="password"disabled>
+
   </div>
 
   <button type="submit" class="button">Create Room</button>
 </form>
 
 </div>
+
 {% endblock %}
 
 {% block js %}

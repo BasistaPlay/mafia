@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.crypto import get_random_string
+from game.models import Location, Role
 
 class GameRoom(models.Model):
     code = models.CharField(max_length=6, unique=True)
@@ -21,7 +22,9 @@ class GameRoom(models.Model):
 class Player(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     room = models.ForeignKey(GameRoom, on_delete=models.CASCADE)
-    is_owner = models.BooleanField(default=False) 
+    is_owner = models.BooleanField(default=False)
+    role = models.ForeignKey(Role, on_delete=models.CASCADE, blank=True, null=True, related_name='players_in_game')
+    location = models.ForeignKey(Location, on_delete=models.CASCADE, blank=True, null=True)
 
     def __str__(self):
         return self.user.username

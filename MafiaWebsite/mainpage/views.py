@@ -18,7 +18,12 @@ from django.utils.html import strip_tags
 # Create your views here.
 
 def home(request):
-    return render(request, 'mainpage/home.html')
+    if request.user.is_authenticated:
+        # Ja lietotājs ir pieslēdzies, redirektē uz menu lapu
+        return redirect('menu')
+    else:
+        # Ja lietotājs nav pieslēdzies, renderē sakumlapu
+        return render(request, 'mainpage/home.html')
 
 def register(request):
     if request.method == 'POST':

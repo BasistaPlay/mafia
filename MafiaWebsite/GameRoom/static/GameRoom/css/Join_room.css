@@ -168,9 +168,9 @@ body {
     margin: 0 5px; /* Atstarpes starp inputiem */
   }
   
-  #code_hidden {
-    display: none;
-  }
+  /* #code_hidden {
+    display: block;
+  } */
   
   .input-container {
     display: flex;
@@ -244,3 +244,14 @@ body {
     color: #fff;
   }
   
+  .error {
+    position: absolute;
+    background-color: #f90b0b9d;
+    border: 1px solid #fcc2c3;
+    padding: 20px 20px;
+    margin-bottom: 10px; /* Pievieno atstarpi starp kļūdasW ziņojumiem */
+    clear: both; /* Notīra peldošo efektu, lai kļūdas ziņojumi nepārklājas ar citiem elementiem */
+    width: 250px;
+    right: 0;
+    text-align: center;
+  }

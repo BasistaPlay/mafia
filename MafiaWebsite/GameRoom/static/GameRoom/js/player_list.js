@@ -1,5 +1,3 @@
-// room_actions.js
-
 function updatePlayerList() {
     var roomCode = $('#room-code').data('room-code');
     var currentUsername = $('#current-username').data('current-username');
@@ -13,7 +11,7 @@ function updatePlayerList() {
             playerListContainer.empty();
 
             data.players.forEach(function (player) {
-                var playerHTML = '<li>';
+                var playerHTML = '<li data-player-id="' + player.id + '">';
 
                 if (player.is_owner) {
                     playerHTML += '<strong>' + player.username + '  </strong><i class="fas fa-crown"></i>';
@@ -21,14 +19,20 @@ function updatePlayerList() {
                     playerHTML += player.username;
                 }
 
+                var removePlayerLink = '';
+                var assignOwnerLink = '';
+
                 // Pārbaudām, vai lietotājvārds sakrīt ar pašreizējā lietotāja lietotājvārdu, lai pievienotu pogas
                 if (!player.is_owner && player.username !== currentUsername) {
-                    playerHTML +=
-                        '<a href="/game-room/room/' + roomCode + '/remove-player/' + player.id + '">Remove</a>' +
-                        '<a href="/game-room/change-owner/' + roomCode + '/' + player.id + '">Assign as Owner</a>';
+                    // Iegūstam spēlētāja ID no paslēptā div elementa
+                    var playerId = $(playerHTML).find('.hidden-player-id').text();
+
+                    removePlayerLink = '<a href="/game-room/room/' + roomCode + '/remove-player/' + playerId + '">Remove</a>';
+                    assignOwnerLink = '<a href="/game-room/change-owner/' + roomCode + '/' + playerId + '">Assign as Owner</a>';
+                    console.log(playerId);
                 }
 
-                playerHTML += '</li>';
+                playerHTML += removePlayerLink + assignOwnerLink + '</li>';
                 playerListContainer.append(playerHTML);
             });
         },

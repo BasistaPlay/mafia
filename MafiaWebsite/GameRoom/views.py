@@ -6,6 +6,7 @@ from django.http import JsonResponse, HttpResponse, HttpResponseRedirect, Http40
 from channels.generic.websocket import WebsocketConsumer
 from django.contrib.auth.models import User
 from django.urls import reverse
+from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
 def menu(request):
@@ -23,7 +24,7 @@ def menu(request):
 def create_room(request):
     if request.method == 'POST':
         room_code = request.POST.get('room_code')
-        max_players = request.POST.get('player-count')
+        max_players = request.POST.get('max_players')
 
         if max_players is None or max_players == '':
             return render(request, 'GameRoom/CreateRoom.html', {'error': 'Player count is required.'})
@@ -31,12 +32,12 @@ def create_room(request):
         # Convert max_players to an integer
         max_players = int(max_players)
 
-        is_private = bool(request.POST.get('is-private'))
+        is_private = request.POST.get('is_private', False) == 'on'
         password = request.POST.get('password')
 
         room = GameRoom.objects.create(
             code = room_code,
-            player_count = max_players,
+            max_players = max_players,
             is_private = is_private,
             password = password,
             created_by = request.user
@@ -44,6 +45,7 @@ def create_room(request):
 
         player = Player.objects.create(user=request.user, room=room, is_owner=True)
         room.player_count += 1
+        room.save()
 
         request.user.is_in_room = True
         request.user.save()
@@ -138,31 +140,30 @@ def join_room(request):
     rooms = GameRoom.objects.all()
 
     if request.method == 'POST':
-        room_code = request.POST.get('room_code')
+        room_code = request.POST.get('real_code')
+        password = request.POST.get('password')
 
         try:
             room = GameRoom.objects.get(code=room_code)
+
+            if room.is_private and password != room.password:
+                return JsonResponse({'success': False, 'error': 'Invalid password'})
+
+            if room.player_count < room.max_players:
+                player = Player.objects.create(user=request.user, room=room)
+                room.player_count += 1
+                room.save()
+
+                return JsonResponse({'success': True})
+
+            else:
+                return render(request, 'GameRoom/join_room.html', {'rooms': rooms, 'error': 'The room is already full'})
+
         except GameRoom.DoesNotExist:
             return render(request, 'GameRoom/join_room.html', {'rooms': rooms, 'error': 'Room does not exist'})
 
-        if room.is_private:
-            password = request.POST.get('password')
-
-            if password != room.password:
-                return render(request, 'GameRoom/join_room.html', {'rooms': rooms, 'error': 'Invalid password'})
-
-        if room.player_count < room.max_players:
-            player = Player.objects.create(user=request.user, room=room)
-            room.player_count += 1
-            room.save()
-
-            # Pāradresācija uz istabas lapu pēc pievienošanās
-            return redirect('GameRoom:room_page', room_code=room.code)
-
-        else:
-            return render(request, 'GameRoom/join_room.html', {'rooms': rooms, 'error': 'The room is already full'})
-
     return render(request, 'GameRoom/join_room.html', {'rooms': rooms})
+
 
 from django.shortcuts import redirect
 
@@ -235,16 +236,36 @@ def fetch_players(request, room_code):
 
 from django.core import serializers
 
-def get_room_list(request, room_code):
-    try:
-        room = GameRoom.objects.get(code=room_code)
-        # Sagatavojam datu objektu, kuru vēlamies atgriezt
-        room_data = {
+def get_rooms_api(request):
+    rooms = GameRoom.objects.all() # Vajadzētu iegūt istabu datus pēc vajadzības
+    room_data = [{'code': room.code} for room in rooms]
+    return JsonResponse(room_data, safe=False)
+
+from django.http import JsonResponse
+
+@csrf_exempt
+def check_user_status(request):
+    if request.method == 'POST':
+        # Šeit iegūstiet lietotāja statusu vai veiciet nepieciešamās darbības
+        response_data = {'message': 'User status checked successfully'}
+        return JsonResponse(response_data)
+        room.player_count += 1
+        room.save()
+    else:
+        # Ja pieprasījums nav POST metode, atgriez atbilstošu kļūdas atbildi
+        response_data = {'error': 'Invalid request method'}
+        return JsonResponse(response_data, status=400)
+    
+@login_required(login_url='login')
+def get_room_data(request):
+    rooms = GameRoom.objects.all()
+    room_data = [
+        {
             'code': room.code,
             'player_count': room.player_count,
             'max_players': room.max_players,
-            # ... citi istabas informācijas lauki ...
+            'is_private': room.is_private
         }
-        return JsonResponse(room_data)
-    except GameRoom.DoesNotExist:
-        return JsonResponse({'error': 'Room not found'}, status=404)
+        for room in rooms
+    ]
+    return JsonResponse({'room_data': room_data})

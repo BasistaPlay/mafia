@@ -10,61 +10,47 @@ isPrivateCheckbox.addEventListener('change', function() {
   }
 });
 
-isPrivateCheckbox.addEventListener('click', function() {
-  if (!isPrivateCheckbox.checked) {
-    passwordField.value = '';
-  }
-});
+document.addEventListener("DOMContentLoaded", function() {
+  var playerCountInput = document.getElementById("player-count-input");
+  var minusButton = document.querySelector(".minus");
+  var plusButton = document.querySelector(".plus");
+  var num = document.querySelector(".num");
+  let a = parseInt(num.innerText, 10);
 
-const socialButtons = document.querySelectorAll('.social div');
-
-socialButtons.forEach(button => {
-  button.addEventListener('mouseenter', () => {
-    button.classList.add('snake-animation');
-  });
-
-  button.addEventListener('mouseleave', () => {
-    button.classList.remove('snake-animation');
-  });
-});
-
-function togglePasswordVisibility() {
-    var passwordInput = document.getElementById("password");
-    var toggleIcon = document.getElementsByClassName("toggle-password")[0];
-
-    if (passwordInput.type === "password") {
-        passwordInput.type = "text";
-        toggleIcon.classList.remove("visible");
-    } else {
-        passwordInput.type = "password";
-        toggleIcon.classList.add("visible");
-    }
-}
-
-const plus = document.querySelector(".plus"),
-    minus = document.querySelector(".minus"),
-    num = document.querySelector(".num");
-    let a = 1;
-    plus.addEventListener("click", ()=>{
-      a++;
-      a = (a < 10) ? "0" + a : a;
-      num.innerText = a;
-    });
-    minus.addEventListener("click", ()=>{
-      if(a > 1){
+  if (playerCountInput && minusButton && plusButton && num) {
+    minusButton.addEventListener("click", function() {
+      if (a > 6) {
         a--;
         a = (a < 10) ? "0" + a : a;
         num.innerText = a;
+        playerCountInput.value = a;
+        updateButtons(a);
       }
     });
 
-
-    // Iegūst span elementu un inputa elementu
-    document.addEventListener("DOMContentLoaded", function() {
-      var playerCountSpan = document.getElementById("player-count");
-      var playerCountInput = document.getElementById("player-count-input");
-    
-      if (playerCountSpan && playerCountInput) {
-        playerCountInput.value = playerCountSpan.textContent;
+    plusButton.addEventListener("click", function() {
+      if (a < 12) {
+        a++;
+        a = (a < 10) ? "0" + a : a;
+        num.innerText = a;
+        playerCountInput.value = a;
+        updateButtons(a);
       }
     });
+
+    function updateButtons(value) {
+      if (value <= 6) {
+        minusButton.style.display = "none";
+        plusButton.style.display = "inline";
+      } else if (value >= 12) {
+        plusButton.style.display = "none";
+        minusButton.style.display = "inline";
+      } else {
+        minusButton.style.display = "inline";
+        plusButton.style.display = "inline";
+      }
+    }
+
+    updateButtons(a);
+  }
+});

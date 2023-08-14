@@ -1,6 +1,10 @@
 {% extends 'base/base.html' %}
 {% load static %}
 
+{% block title %}
+Mafia | Join room
+{% endblock %}
+
 {% block css %}
 <link rel="stylesheet" href="{% static 'GameRoom/css/Join_room.css' %}" />
 <link
@@ -18,11 +22,16 @@
   <div class="redlight-small"></div>
   <div class="bluelight-small"></div>
 
+  {% if error %}
+  <div class='error'>
+    {{ error }}
+  </div>
+{% endif %}
+
   <div class='window'>
     <div class="title" id="title">Join a Room</div>
-    <form method="post" class='Room_code'>
+    <form method="post" class="Room_code">
       {% csrf_token %}
-      <label for="room_code" id="room-code-label">Room Code:</label>
       <div class="input-container">
         <input class="inputbox input-field" maxlength="1" type="text">
         <input class="inputbox input-field" maxlength="1" type="text">
@@ -31,9 +40,10 @@
         <input class="inputbox input-field" maxlength="1" type="text">
         <input class="inputbox input-field" maxlength="1" type="text">
       </div>
-      <input id="code_hidden" maxlength="6" name="real_code" type="text">
+      <input id="code_hidden" maxlength="6" name="real_code" style="display: none;">
       <button type="submit" id="submit_button" style="display: none;">Submit</button>
     </form>
+    
     <hr>
     <div id="room-list-container">
       <h2>Available Rooms:</h2>
@@ -45,28 +55,39 @@
           <th>Private</th>
           <th>Join room</th>
         </tr>
+        <tbody id="room-list-body">
         {% for room in rooms %}
+        {% if room.player_count == room.max_players %}
+        {% else %}
         <tr class='data'>
           <th>{{ room.code }}</th>
-          <th>{{ room.player_count }}/{{ room.max_players }}</th>
+          <th>
+            <span class="player-count" data-player-count="{{ room.player_count }}">{{room.player_count}}</span> / 
+            <span class="max-players" data-max-players="{{ room.max_players }}">{{ room.max_players }}</span>
+          </th>
           {% if room.is_private %}
             <th><i class="fas fa-lock"></i></th>
           {% else %}
             <th><i class="fas fa-unlock" style="color: #ffffff;"></i></th>
           {% endif %}
           <th>
-            <form id="join-room-form-{{ room.code }}" method="post">
+            <form class="join-room-form" data-room-code="{{ room.code }}">
               {% csrf_token %}
               <input type="hidden" name="room_code" value="{{ room.code }}">
               {% if room.is_private %}
-                <input class='password' type="password" name="password" placeholder="Enter the password">
+                <input class='password' type="password" name="password" placeholder="Enter the password" data-room-code="{{ room.code }}">
               {% endif %}
-              <button class="join-room-link" type="submit">Join</button>
+              <button class="join-room-link" type="button">Join</button>
             </form>
           </th>
         </tr>
+        {% endif %}
+        
         {% endfor %}
+      </tbody>
       </table>
+    </div>
+    <div id="content-container">
     </div>
 
     <div id="room-code" data-room-code="{{ room.code }}" style="display: none;"></div>
@@ -75,7 +96,4 @@
   <script src="{% static 'GameRoom/js/join_room.js' %}"></script>
   <script src="{% static 'GameRoom/js/room_list.js' %}"></script>
 
-  <script>
-    const joinRoomURL = "{% url 'GameRoom:join_room' %}";
-  </script>
 {% endblock %}

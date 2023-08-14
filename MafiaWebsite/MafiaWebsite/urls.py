@@ -21,6 +21,7 @@ from django.contrib.auth import views as auth_views
 from mainpage import views
 from allauth.account.views import confirm_email
 from GameRoom import views as GameRoom
+from game import views as Game
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 urlpatterns = [
@@ -41,6 +42,7 @@ urlpatterns = [
     path('menu/', GameRoom.menu, name='menu'),
     path('game-room/', include('GameRoom.urls', namespace='GameRoom')),
     path('logout/', GameRoom.logout_view, name='logout'),
+    path('game/', include('game.urls', namespace='game')),
 
 ]
 urlpatterns += staticfiles_urlpatterns()
