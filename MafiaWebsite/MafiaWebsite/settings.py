@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
+from django.core.asgi import get_asgi_application
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -33,11 +34,15 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'jazzmin',
+    'django.contrib.auth',
     'django.contrib.admin',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
+    'django.contrib.sites',
+    'daphne',
     'django.contrib.staticfiles',
-    'channels',
+    'django_extensions',
+
     
 
     # my apps
@@ -50,9 +55,7 @@ INSTALLED_APPS = [
 
     #alauth apps
 
-    'django.contrib.auth',
     'django.contrib.messages',
-    'django.contrib.sites',
 
     'allauth',
     'allauth.account',
@@ -71,7 +74,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
 ROOT_URLCONF = 'MafiaWebsite.urls'
 
 TEMPLATES = [
@@ -91,8 +93,16 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'MafiaWebsite.wsgi.application'
+ASGI_APPLICATION = 'MafiaWebsite.asgi.application'
 
-
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
@@ -155,7 +165,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static')
+    os.path.join(BASE_DIR, "static"),
 ]
 
 # Default primary key field type
@@ -196,5 +206,3 @@ EMAIL_HOST_PASSWORD = 'hjmyxkzttzahgfib'
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = 'mafiagameeee@gmail.com'
 
-# Channels konfigurācija
-ASGI_APPLICATION = 'MafiaWebsite.routing.application'

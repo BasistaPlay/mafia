@@ -124,13 +124,14 @@ body {
 .room{
     text-align: center;
     font-size: 42px;
+    cursor: pointer;
 }
 
 #chat-messages {
     position: fixed;
     bottom: 0;
     right: 0;
-    border-radius: 0 0 0 15px;
+    border-radius: 15px 0 0 0;
     background-color: rgba(0, 0, 0, 0.279); /* Caurspīdīgs tumšs fons */
     padding: 10px;
     width: 300px; /* Piešķirt čata logam fiksētu platumu */
@@ -247,4 +248,39 @@ body {
 
 .hidden {
   display: none;
+}
+
+.arrow{
+	color:#ff0000;
+	cursor: pointer;
+	transition: transform 0.3s;
+  border-radius: 6px;
+  border: none;
+  background-color:rgba(255, 0, 0, 0.237) ;
+}
+
+.arrow:hover{
+	transform: scale(1.2);
+}
+
+#room-messages .message-leave{
+  position: absolute;
+  background-color: #ff6b6b;
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #e53935;
+  margin-bottom: 10px;
+  right: 0;
+}
+
+#room-messages .message-Join{
+  position: absolute;
+  background-color: #23ff0179;
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #1eff05;
+  margin-bottom: 10px;
+  right: 0;
 }

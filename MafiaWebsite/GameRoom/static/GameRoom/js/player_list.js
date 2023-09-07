@@ -1,51 +1,43 @@
-function updatePlayerList() {
-    var roomCode = $('#room-code').data('room-code');
-    var currentUsername = $('#current-username').data('current-username');
+function fetchPlayerList() {
+  // Iegūstam istabas kodu no kāda avota, piemēram, no HTML elementa
+  var roomCode = document.getElementById('room-code').getAttribute('data-room-code');
 
-    $.ajax({
-        url: '/game-room/fetch-players/' + roomCode + '/',
-        type: 'GET',
-        dataType: 'json',
-        success: function (data) {
-            var playerListContainer = $('#player-list');
-            playerListContainer.empty();
+  // Veidojam AJAX pieprasījumu uz serveri, nododot istabas kodu
+  $.ajax({
+    url: `/game-room/fetch-players/${roomCode}/`,
+    type: 'GET',
+    success: function(data) {
+      // Atjaunojam spēlētāju sarakstu ar jauno HTML fragmentu
+      $('#player-list').html(data.player_list_html);
+    },
+    error: function(xhr, status, error) {
+      console.log(error); // Varat izvadīt kļūdu konsolē, lai labāk saprastu, kas notiek
+    }
+  });
+}
+function updatePlayerCountAndList() {
+  var roomCode = document.getElementById('room-code').getAttribute('data-room-code');
+  var url = `/game-room/get-player-count/${roomCode}/`;
 
-            data.players.forEach(function (player) {
-                var playerHTML = '<li data-player-id="' + player.id + '">';
+  fetch(url)
+    .then(response => response.json())
+    .then(data => {
+      var playerCount = data.player_count;
+      var maxPlayers = data.max_players;
+      var playerListHtml = data.player_list_html;
 
-                if (player.is_owner) {
-                    playerHTML += '<strong>' + player.username + '  </strong><i class="fas fa-crown"></i>';
-                } else {
-                    playerHTML += player.username;
-                }
+      var playerCountSpan = document.getElementById('player-count');
+      playerCountSpan.textContent = playerCount + ' / ' + maxPlayers;
 
-                var removePlayerLink = '';
-                var assignOwnerLink = '';
-
-                // Pārbaudām, vai lietotājvārds sakrīt ar pašreizējā lietotāja lietotājvārdu, lai pievienotu pogas
-                if (!player.is_owner && player.username !== currentUsername) {
-                    // Iegūstam spēlētāja ID no paslēptā div elementa
-                    var playerId = $(playerHTML).find('.hidden-player-id').text();
-
-                    removePlayerLink = '<a href="/game-room/room/' + roomCode + '/remove-player/' + playerId + '">Remove</a>';
-                    assignOwnerLink = '<a href="/game-room/change-owner/' + roomCode + '/' + playerId + '">Assign as Owner</a>';
-                    console.log(playerId);
-                }
-
-                playerHTML += removePlayerLink + assignOwnerLink + '</li>';
-                playerListContainer.append(playerHTML);
-            });
-        },
-        error: function (error) {
-            console.log('Error fetching players:', error);
-        },
+      var playerListElement = document.getElementById('player-list');
+      playerListElement.innerHTML = playerListHtml;
+    })
+    .catch(error => {
+      console.error('Error:', error);
     });
 }
 
-// Izmantojot funkciju, izsaucam to bez argumentiem
-updatePlayerList();
-
+// Atjauno spēlētāju skaitu un sarakstu ik pēc 5 sekundēm
+setInterval(updatePlayerCountAndList, 5000);
 // Atjauno spēlētāju sarakstu ik pēc 5 sekundēm
-setInterval(function () {
-    updatePlayerList();
-}, 5000);
+setInterval(fetchPlayerList, 5000);

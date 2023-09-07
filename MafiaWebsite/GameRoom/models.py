@@ -1,11 +1,13 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.crypto import get_random_string
+from django.db.models.signals import post_save, post_delete
 from game.models import Location, Role
+from django.dispatch import receiver
 
 class GameRoom(models.Model):
     code = models.CharField(max_length=6, unique=True)
-    player_count = models.IntegerField(default=0)
+    player_count = models.PositiveIntegerField(default=0)
     is_private = models.BooleanField(default=False)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     password = models.CharField(max_length=255, blank=True, null=True)
@@ -28,6 +30,24 @@ class Player(models.Model):
 
     def __str__(self):
         return self.user.username
+    
+@receiver(post_save, sender=Player)
+def update_player_count_on_player_save(sender, instance, **kwargs):
+    """
+    Pēc spēlētāja saglabāšanas atjauno player_count GameRoom modelī.
+    """
+    room = instance.room
+    room.player_count = Player.objects.filter(room=room).count()
+    room.save()
+
+@receiver(post_delete, sender=Player)
+def update_player_count_on_player_delete(sender, instance, **kwargs):
+    """
+    Pēc spēlētāja dzēšanas atjauno player_count GameRoom modelī.
+    """
+    room = instance.room
+    room.player_count = Player.objects.filter(room=room).count()
+    room.save()
 
 class Chat(models.Model):
     room = models.ForeignKey(GameRoom, on_delete=models.CASCADE)

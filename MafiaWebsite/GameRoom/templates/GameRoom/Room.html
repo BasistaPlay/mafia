@@ -24,38 +24,44 @@ Mafia | Room
   <div class="redlight-small"></div>
   <div class="bluelight-small"></div>
 </div>
+<div id="room-messages"></div>
 
 <div id="room-container">
-  <h1 class='room'>Room: {{ room.code }}</h1>
+  {% comment %} <h1 class='room'>Room: {{ room.code }}</h1> {% endcomment %}
+  <h1 class='room' id='roomHeader'>
+    <span class="room-text">Room:</span>
+    <span id='roomCode' data-room-code="{{room.code}}">******</span>
+  </h1>
   <div id="room-details">
     <h2>Room Details:</h2>
     <h3>Number of players: <span id="player-count">{{ room.player_count }} / {{room.max_players}}</span></h3>
     <p>Players:</p>
     <ul id="player-list">
       {% for player in players %}
-      <div id="player-ids" data-player-ids="{{ player_ids }}"></div>
         <li class='player-list' data-player-id="{{ player.id }}">
-          <div class="hidden-player-id">{{ player.id }}</div>
-          <div id="room-code" data-room-code="{{ room.code }}" style="display: none;"></div>
-          <div id="current-username" data-current-username="{{ request.user.username }}" style="display: none;"></div>
           {% if player.is_owner %}
           <i class="fas fa-crown"></i>
-            <strong>{{ player.user.username }} (Owner)</strong>
+            <strong>{{ player.user.username }}</strong>
           {% else %}
             {{ player.user.username }}
             {% if not player.is_owner and player.user != request.user %}
-            <a href="#" class="remove-player-link" data-player-id="{{ player.id }}">Remove</a>
+            <a href="{% url 'GameRoom:remove-player' player_id=player.id %}" class="remove-player-link" data-player-id="{{ player.id }}">Remove</a>
             <a href="#" class="assign-owner-link" data-player-id="{{ player.id }}">Assign as Owner</a>
             {% endif %}
           {% endif %}
         </li>
       {% endfor %}
     </ul>
+    <!-- Vieta, kur parādīsies ziņojums "Spēle sākas" -->
+<div id="game-start-message" style="display: none;">
+  <p>Spēle sākas!</p>
+</div>
 
-    {% if room.player_count == room.max_players %}
+<!-- Poga, kas izsauks spēles sākšanas funkciju -->
+{% if room.player_count == room.max_players %}
     
-    <button id="start-game-button">Start Game</button>
-    {% endif %}
+<button id="start-game-button">Start Game</button>
+{% endif %}
   </div>
 </div>
 
@@ -69,6 +75,10 @@ Mafia | Room
   <input type="text" id="message-input" placeholder="Type your message here...">
   <button id="send-button">Send</button>
 </div>
+<form method="post" action="{% url 'GameRoom:leave-room' %}">
+  {% csrf_token %}
+  <button class='arrow' type="submit" id="leave-room-button">Leave Room</button>
+</form>
 
 <!-- Ievietojiet div elementu ar id="room-code" un data-room-code atribūtu, kas satur istabas kodu -->
 <div id="room-code" data-room-code="{{ room.code }}" style="display: none;"></div>
@@ -80,9 +90,7 @@ Mafia | Room
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="{% static 'GameRoom/js/chat.js' %}"></script>
 <script src="{% static 'GameRoom/js/player_list.js' %}"></script>
-<script src="{% static 'GameRoom/js/player_exit.js' %}"></script>
 <script src="{% static 'GameRoom/js/room.js' %}"></script>
-
 
 
 <script>

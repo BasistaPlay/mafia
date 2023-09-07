@@ -16,11 +16,11 @@ function updateRooms() {
           var roomRow = document.createElement('tr');
           roomRow.classList.add('data');
 
-          var roomCodeCell = document.createElement('td');
+          var roomCodeCell = document.createElement('th');
           roomCodeCell.textContent = room.code;
           roomRow.appendChild(roomCodeCell);
 
-          var playerCountCell = document.createElement('td');
+          var playerCountCell = document.createElement('th');
           var playerCountSpan = document.createElement('span');
           playerCountSpan.classList.add('player-count');
           playerCountSpan.dataset.playerCount = room.player_count;
@@ -37,36 +37,42 @@ function updateRooms() {
 
           roomRow.appendChild(playerCountCell);
 
-          var privateCell = document.createElement('td');
-          if (room.is_private) {
-            var privateIcon = document.createElement('i');
-            privateIcon.classList.add('fas', 'fa-lock');
-            privateCell.appendChild(privateIcon);
-          } else {
-            var privateIcon = document.createElement('i');
-            privateIcon.classList.add('fas', 'fa-unlock');
+          var privateCell = document.createElement('th');
+          var privateIcon = document.createElement('i');
+          privateIcon.classList.add('fas', room.is_private ? 'fa-lock' : 'fa-unlock');
+          if (!room.is_private) {
             privateIcon.style.color = '#ffffff';
-            privateCell.appendChild(privateIcon);
           }
+          privateCell.appendChild(privateIcon);
           roomRow.appendChild(privateCell);
 
-          var joinCell = document.createElement('td');
-          var joinLink = document.createElement('a');
-          joinLink.classList.add('join-room-link');
-          joinLink.href = '#';
-          joinLink.textContent = 'Join';
-          joinLink.onclick = function() {
-            joinRoom(room.code);
-            return false; // Lai novērstu noklikšķināšanu saitē
-          };
-          joinCell.appendChild(joinLink);
+          var joinCell = document.createElement('th');
+          var joinForm = document.createElement('form');
+          joinForm.classList.add('join-room-form');
+          joinForm.dataset.roomCode = room.code;
+
+          if (room.is_private) {
+            var passwordInput = document.createElement('input');
+            passwordInput.classList.add('password');
+            passwordInput.type = 'password';
+            passwordInput.name = 'password';
+            passwordInput.placeholder = 'Enter the password';
+            passwordInput.dataset.roomCode = room.code;
+            joinForm.appendChild(passwordInput);
+          }
+
+          var joinButton = document.createElement('button');
+          joinButton.classList.add('join-room-link');
+          joinButton.type = 'submit';
+          joinButton.textContent = 'Join';
+          joinForm.appendChild(joinButton);
+
+          joinCell.appendChild(joinForm);
           roomRow.appendChild(joinCell);
 
           roomListBody.appendChild(roomRow);
         }
-        });
-
-      setupPasswordInputs();
+      });
     },
     error: function(error) {
       console.error('Kļūda atjauninot istabu sarakstu:', error);

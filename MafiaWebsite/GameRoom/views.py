@@ -7,6 +7,9 @@ from channels.generic.websocket import WebsocketConsumer
 from django.contrib.auth.models import User
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+import json
 
 # Create your views here.
 def menu(request):
@@ -44,7 +47,6 @@ def create_room(request):
         )
 
         player = Player.objects.create(user=request.user, room=room, is_owner=True)
-        room.player_count += 1
         room.save()
 
         request.user.is_in_room = True
@@ -140,53 +142,61 @@ def join_room(request):
     rooms = GameRoom.objects.all()
 
     if request.method == 'POST':
-        room_code = request.POST.get('real_code')
-        password = request.POST.get('password')
+        room_code = request.POST.get('room_code')
 
         try:
             room = GameRoom.objects.get(code=room_code)
 
-            if room.is_private and password != room.password:
-                return JsonResponse({'success': False, 'error': 'Invalid password'})
-
-            if room.player_count < room.max_players:
-                player = Player.objects.create(user=request.user, room=room)
-                room.player_count += 1
-                room.save()
-
-                return JsonResponse({'success': True})
+            # Pārbaude vai istaba ir privāta un vai ievadītā parole ir pareiza
+            if room.is_private:
+                entered_password = request.POST.get('password')
+                if entered_password == room.password:
+                    player = Player.objects.create(user=request.user, room=room)
+                    room.save()
+                    return redirect('GameRoom:room', room_code=room_code)
+                else:
+                    return render(request, 'GameRoom/join_room.html', {'rooms': rooms, 'error': 'Incorrect password'})
 
             else:
-                return render(request, 'GameRoom/join_room.html', {'rooms': rooms, 'error': 'The room is already full'})
+                player = Player.objects.create(user=request.user, room=room)
+                room.save()
+                return redirect('GameRoom:room', room_code=room_code)
 
         except GameRoom.DoesNotExist:
             return render(request, 'GameRoom/join_room.html', {'rooms': rooms, 'error': 'Room does not exist'})
 
     return render(request, 'GameRoom/join_room.html', {'rooms': rooms})
 
+# @login_required(login_url='login')
+# def join_room(request):
+#     rooms = GameRoom.objects.all()  # Pirms jebkādas darbības definējiet 'rooms'
 
-from django.shortcuts import redirect
+#     if request.method == 'POST':
+#         room_code = request.POST.get('real_code')
+#         password = request.POST.get('password')  # Pievieno paroles iegūšanu no POST datiem
 
+#         try:
+#             room = GameRoom.objects.get(code=room_code)
 
-@login_required(login_url='login')
-def remove_player(request, room_code, player_id):
-    try:
-        room = GameRoom.objects.get(code=room_code)
-        player = Player.objects.get(id=player_id, room=room)
-    except GameRoom.DoesNotExist or Player.DoesNotExist:
-        return redirect('GameRoom:room', room_code=room_code)
+#             if room.player_count < room.max_players:
+#                 # Ja ir norādīta parole un tā nesakrīt ar istabas paroli
+#                 if room.is_private and (password is None or password != room.password):
+#                     return render(request, 'GameRoom/join_room.html', {'rooms': rooms, 'error': 'Invalid password'})
 
-    if request.user == room.created_by:  # Pārbaudām, vai lietotājs ir istabas īpašnieks
-        # Saglabājam izmetā lietotāja informāciju sesijā, lai to attēlotu menu lapā
-        request.session['removed_player_username'] = player.user.username
-        request.session['removed_player_email'] = player.user.email
+#                 player = Player.objects.create(user=request.user, room=room)
+#                 room.player_count += 1
+#                 room.save()
 
-        player.delete()  # Izmest lietotāju no istabas
+#                 return redirect('GameRoom:room', room_code=room_code)
 
-        # Pārvietot izmeto spēlētāju uz menu lapu
-        return redirect('menu')  # Aizstājiet 'menu' ar jūsu reālo URL uz menu lapu
+#             else:
+#                 return render(request, 'GameRoom/join_room.html', {'rooms': rooms, 'error': 'The room is already full'})
 
-    return redirect('GameRoom:room', room_code=room_code)
+#         except GameRoom.DoesNotExist:
+#             return render(request, 'GameRoom/join_room.html', {'rooms': rooms, 'error': 'Room does not exist'})
+
+#     return render(request, 'GameRoom/join_room.html', {'rooms': rooms})
+
 
 
 
@@ -220,28 +230,35 @@ def change_owner(request, room_code, player_id):
     return redirect('GameRoom:room', room_code=room_code)
 
 
+
 def fetch_players(request, room_code):
+    players = Player.objects.filter(room__code=room_code)
+    
+    # Pārbaude, vai pašreizējais lietotājs ir īpašnieks
+    current_user_is_owner = False
     room = GameRoom.objects.get(code=room_code)
-    players = room.player_set.all()
+    if room.created_by == request.user:
+        current_user_is_owner = True
 
-    data = []
+    player_list_html = ""
     for player in players:
-        data.append({
-            'username': player.user.username,
-            'is_owner': player.is_owner,
-        })
+        player_list_html += '<li class="player-list">'
+        if player.is_owner:
+            player_list_html += '<i class="fas fa-crown"></i>'
+        player_list_html += player.user.username
+        if not player.is_owner and current_user_is_owner:
+            player_list_html += f' <a href="/game-room/remove-player/{player.id}/" class="remove-player-link" data-username="{player.id}">Remove</a>'
+        player_list_html += '</li>'
 
-    return JsonResponse({'players': data})
+    return JsonResponse({'player_list_html': player_list_html, 'current_user_is_owner': current_user_is_owner})
 
-
-from django.core import serializers
 
 def get_rooms_api(request):
     rooms = GameRoom.objects.all() # Vajadzētu iegūt istabu datus pēc vajadzības
     room_data = [{'code': room.code} for room in rooms]
     return JsonResponse(room_data, safe=False)
 
-from django.http import JsonResponse
+
 
 @csrf_exempt
 def check_user_status(request):
@@ -249,7 +266,6 @@ def check_user_status(request):
         # Šeit iegūstiet lietotāja statusu vai veiciet nepieciešamās darbības
         response_data = {'message': 'User status checked successfully'}
         return JsonResponse(response_data)
-        room.player_count += 1
         room.save()
     else:
         # Ja pieprasījums nav POST metode, atgriez atbilstošu kļūdas atbildi
@@ -259,13 +275,94 @@ def check_user_status(request):
 @login_required(login_url='login')
 def get_room_data(request):
     rooms = GameRoom.objects.all()
-    room_data = [
-        {
-            'code': room.code,
+    room_data = []
+
+    for room in rooms:
+        # Pārbaudiet, vai šajā istabā nav neviena spēlētāja
+        if room.player_count == 0:
+            room.delete()
+        else:
+            room_data.append({
+                'code': room.code,
+                'player_count': room.player_count,
+                'max_players': room.max_players,
+                'is_private': room.is_private
+            })
+
+    return JsonResponse({'room_data': room_data})
+
+def room_view(request, room_code):
+    room = GameRoom.objects.get(code=room_code)
+    players = Player.objects.filter(room=room)
+    context = {
+        'room': room,
+        'players': players,
+    }
+    return render(request, 'room.html', context)
+
+
+@login_required(login_url='login')
+def leave_room(request):
+    try:
+        player = Player.objects.get(user=request.user)
+        room = player.room
+        if player.is_owner:
+            new_owner = Player.objects.filter(room=player.room).exclude(id=player.id).first()
+            if new_owner:
+                new_owner.is_owner = True
+                new_owner.save()
+
+        player.delete()
+
+        room.save()
+
+        return redirect('menu')  # Aizvietojiet ar atbilstošo URL
+    except Player.DoesNotExist:
+        return redirect('menu')  # Ja spēlētājs nav atrasts, vienkārši atgriežamies uz menu lapu
+    
+@login_required(login_url='login')
+def remove_player(request, player_id):
+    try:
+        player = Player.objects.get(id=player_id)
+        room = player.room
+
+        # Pārbauda, vai pieprasījuma iesniedzējs ir istabas īpašnieks
+        if room.created_by == request.user:
+            
+            player.delete()
+
+            # Ja izdzēsts spēlētājs bija īpašnieks, piešķiram īpašnieka statusu citam spēlētājam
+            # if player.is_owner:
+            #     new_owner = Player.objects.filter(room=room).first()
+            #     if new_owner:
+            #         new_owner.is_owner = True
+            #         new_owner.save()
+
+            room.save()
+            return redirect(reverse('GameRoom:room', kwargs={'room_code': room.code}))
+
+    except Player.DoesNotExist:
+        pass
+
+    raise Http404("Player not found or you don't have permission to remove the player.")
+
+
+def update_player_count(request, room_code):
+    try:
+        room = GameRoom.objects.get(code=room_code)
+        player_count = room.player_count
+        max_players = room.max_players
+        return JsonResponse({'player_count': player_count, 'max_players': max_players})
+    except GameRoom.DoesNotExist:
+        return JsonResponse({'error': 'Room does not exist'}, status=400)
+    
+def get_player_count(request, room_code):
+    try:
+        room = GameRoom.objects.get(code=room_code)
+        data = {
             'player_count': room.player_count,
             'max_players': room.max_players,
-            'is_private': room.is_private
         }
-        for room in rooms
-    ]
-    return JsonResponse({'room_data': room_data})
+        return JsonResponse(data)
+    except GameRoom.DoesNotExist:
+        return JsonResponse({'error': 'Room not found'}, status=404)
