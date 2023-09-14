@@ -12,6 +12,7 @@ class GameRoom(models.Model):
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     password = models.CharField(max_length=255, blank=True, null=True)
     max_players = models.PositiveIntegerField(default=7)
+    is_game_started = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
         if not self.code:
@@ -27,6 +28,7 @@ class Player(models.Model):
     is_owner = models.BooleanField(default=False)
     role = models.ForeignKey(Role, on_delete=models.CASCADE, blank=True, null=True, related_name='players_in_game')
     location = models.ForeignKey(Location, on_delete=models.CASCADE, blank=True, null=True)
+    is_ready = models.BooleanField(default=False)
 
     def __str__(self):
         return self.user.username

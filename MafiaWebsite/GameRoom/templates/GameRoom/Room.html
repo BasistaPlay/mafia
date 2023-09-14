@@ -34,7 +34,8 @@ Mafia | Room
   </h1>
   <div id="room-details">
     <h2>Room Details:</h2>
-    <h3>Number of players: <span id="player-count">{{ room.player_count }} / {{room.max_players}}</span></h3>
+    <h3>Number of players: <span id="player-count">{{ room.player_count }} / {{ room.max_players }}</span></h3>
+
     <p>Players:</p>
     <ul id="player-list">
       {% for player in players %}
@@ -45,36 +46,36 @@ Mafia | Room
           {% else %}
             {{ player.user.username }}
             {% if not player.is_owner and player.user != request.user %}
-            <a href="{% url 'GameRoom:remove-player' player_id=player.id %}" class="remove-player-link" data-player-id="{{ player.id }}">Remove</a>
-            <a href="#" class="assign-owner-link" data-player-id="{{ player.id }}">Assign as Owner</a>
+            {% comment %} <a href="{% url 'GameRoom:remove-player' player_id=player.id %}" class="remove-player-link" data-player-id="{{ player.id }}">Remove</a>
+            <a href="#" class="assign-owner-link" data-player-id="{{ player.id }}">Assign as Owner</a> {% endcomment %}
             {% endif %}
           {% endif %}
         </li>
       {% endfor %}
     </ul>
-    <!-- Vieta, kur parādīsies ziņojums "Spēle sākas" -->
-<div id="game-start-message" style="display: none;">
-  <p>Spēle sākas!</p>
-</div>
+    <div id="game-controls">
+      {% if current_user_is_owner %}
+          <button id="start-game">Start Game</button>
+      {% endif %}
+  </div>
 
-<!-- Poga, kas izsauks spēles sākšanas funkciju -->
-{% if room.player_count == room.max_players %}
-    
-<button id="start-game-button">Start Game</button>
-{% endif %}
+  {% if room.player_count == room.max_players %}
+  <div id="ready-status" class='ready-status'>
+    <button id="ready-button" class='ready-button'>Ready</button>
+      <p class='ready-button' id='info' style="display: none;">Ready Players: <span id="ready-count">0</span></p>
+  </div>
+  {% endif %}
   </div>
 </div>
 
-<!-- Izvadīt esošos čata ierakstus -->
-<div id="chat-messages">
-  {% for message in room.chat_set.all %}
-    <p><strong>{{ message.sender.username }}:</strong> {{ message.message }}</p>
-  {% endfor %}
+<div class="chat-container">
+  <div class="chat-box" id="chat-box"></div>
+  <div class="input" id="input">
+    <input type="text" id="message-input" placeholder="Type your message here...">
+    <button id="send-button">Send</button>
+  </div>
 </div>
-<div class='input' id='input'>
-  <input type="text" id="message-input" placeholder="Type your message here...">
-  <button id="send-button">Send</button>
-</div>
+
 <form method="post" action="{% url 'GameRoom:leave-room' %}">
   {% csrf_token %}
   <button class='arrow' type="submit" id="leave-room-button">Leave Room</button>
@@ -86,16 +87,25 @@ Mafia | Room
 <div id="current-username" data-current-username="{{ request.user.username }}" style="display: none;"></div>
 
 
+{% comment %} <div id="localVideo">
+  <video id="video" width="640" height="480" autoplay></video>
+  <button id="startButton">Start Capture</button>
+  <button id="stopButton" disabled>Stop Capture</button>
+  <audio id="audio" controls></audio>
+</div> {% endcomment %}
+
+<div id="remoteVideos"></div>
 <!-- Ielādēt jQuery bibliotēku -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="{% static 'GameRoom/js/chat.js' %}"></script>
-<script src="{% static 'GameRoom/js/player_list.js' %}"></script>
 <script src="{% static 'GameRoom/js/room.js' %}"></script>
+<script src="{% static 'GameRoom/js/video.js' %}"></script>
 
 
 <script>
   // Izmantojiet setupChat funkciju, lai inicializētu čatu, un pārbaudiet un izdzēsiet istabu pēc noteiktā laika
-  setupChat("{{ room.code }}", "{{ csrf_token }}");
 </script>
 
 {% endblock %}
+
+

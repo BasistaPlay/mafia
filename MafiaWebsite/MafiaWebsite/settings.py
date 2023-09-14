@@ -43,17 +43,17 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_extensions',
 
-    
+
 
     # my apps
 
     'mainpage',
     'GameRoom',
     'game',
-    
 
 
-    #alauth apps
+
+    # alauth apps
 
     'django.contrib.messages',
 
@@ -113,8 +113,8 @@ DATABASES = {
         'NAME': 'mafia_website',
         'USER': 'root',
         'PASSWORD': '',
-        'HOST':'localhost',
-        'PORT':'3306',
+        'HOST': 'localhost',
+        'PORT': '3306',
         'OPTIONS': {
             'charset': 'utf8mb4',
         }
@@ -174,7 +174,7 @@ STATICFILES_DIRS = [
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-#jazzmitn settings(admin page)
+# jazzmitn settings(admin page)
 
 JAZZMIN_SETTINGS = {
     'site_title': 'Mafia',
@@ -183,7 +183,7 @@ JAZZMIN_SETTINGS = {
     'welcome_sign': 'Welcome to Mafia',  # Customize the welcome message
     'show_sidebar': True,  # Show the sidebar menu
     'navigation_expanded': True,  # Expand all sections in the sidebar menu
-    'hide_apps': [ """'sites'"""],  # Hide specific apps from the admin sidebar
+    'hide_apps': ["""'sites'"""],  # Hide specific apps from the admin sidebar
     'show_ui_builder': False,  # Hide the UI Builder link in the top menu
     'topmenu_links': [],  # Remove any custom links from the top menu
     'usermenu_links': [],  # Remove any custom links from the user menu
@@ -205,4 +205,3 @@ EMAIL_HOST_USER = 'mafiagameeee@gmail.com'
 EMAIL_HOST_PASSWORD = 'hjmyxkzttzahgfib'
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = 'mafiagameeee@gmail.com'
-

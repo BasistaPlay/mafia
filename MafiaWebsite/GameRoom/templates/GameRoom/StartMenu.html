@@ -13,22 +13,15 @@ Mafia | Menu
 
 {% block body %}
 
+
 <div class="lights-container">
     <div class="redlight"></div>
     <div class="bluelight"></div>
 </div>
 
-<section class="user-profile">
-    <div class="profile-info">
-        <i class="fas fa-user"></i>
-      <p id="nickname">{{ nickname }}</p>
-    </div>
-    <button id="logout-button" class="hidden" data-text="Logout">
-        <a href="{% url 'logout' %}">Logout</a>
-      </button>
-  </section>
 
 <div class="content">
+    <a class='arrow' href="{% url 'logout' %}">Logout</a>
     <h2 class="text" data-text="MAFIA">
        MAFIA
     </h2>

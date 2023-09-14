@@ -1,145 +1,181 @@
-$(document).ready(function() {
-  const roomHeader = document.getElementById('roomHeader');
-  const roomCodeElement = $('#roomCode');
-  
-  const roomCode = roomCodeElement.data('room-code');
-  
-  roomHeader.addEventListener('click', () => {
-    roomCodeElement.text(roomCodeElement.text() === '******' ? roomCode : '******');
-  });
-});
+$(document).ready(function () {
+	const roomHeader = document.getElementById('roomHeader')
+	const roomCodeElement = $('#roomCode')
 
-document.addEventListener("DOMContentLoaded", function() {
-  setInterval(updatePlayerCount, 5000); // Atjaunina spēlētāju skaitu ik pēc 5 sekundēm
-});
+	const roomCode = roomCodeElement.data('room-code')
 
-function updatePlayerCount() {
-  const playerCountSpan = document.getElementById('player-count');
-  if (playerCountSpan) {
-    var roomCode = document.getElementById('room-code').getAttribute('data-room-code');
-    fetch(`/game-room/update-player-count/${roomCode}/`, {
-      method: 'GET',
-    })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          playerCountSpan.textContent = `${data.player_count} / ${data.max_players}`;
-        }
-      })
-      .catch(error => {
-        console.error('Error updating player count:', error);
-      });
-  }
-}
-
-// Pārbauda, vai visi spēlētāji ir gatavi
-function areAllPlayersReady() {
-  // Jūsu kods, kas pārbauda, vai visi spēlētāji ir gatavi
-  // Šeit jums jāatgriež true, ja visi ir gatavi, un false, ja nav
-  return true; // Piemērs: vienmēr atgriež true, lai pārbaudītu, ka spēle ir gatava
-}
+	roomHeader.addEventListener('click', () => {
+		roomCodeElement.text(
+			roomCodeElement.text() === '******' ? roomCode : '******'
+		)
+	})
+})
 
 // Parāda ziņojumu "Spēle sākas"
 function showGameStartMessage() {
-  const gameStartMessage = document.getElementById("game-start-message");
-  gameStartMessage.style.display = "block";
+	const gameStartMessage = document.getElementById('game-start-message')
+	gameStartMessage.style.display = 'block'
 }
 
-// // Kad spēles sākšanas poga tiek noklikšķināta
-// document.getElementById("start-game-button").addEventListener("click", function () {
-//   if (areAllPlayersReady()) {
-//     // Ja visi spēlētāji ir gatavi, tad izsauc funkciju, kas parāda ziņojumu
-//     showGameStartMessage();
-//   } else {
-//     alert("Gaidiet, līdz visi spēlētāji ir gatavi!");
-//   }
-// });
+// Funkcija, lai iegūtu CSRF token no sīkdatnēm
+function getCookie(name) {
+	let cookieValue = null
+	if (document.cookie && document.cookie !== '') {
+		const cookies = document.cookie.split(';')
+		for (let i = 0; i < cookies.length; i++) {
+			const cookie = cookies[i].trim()
+			// Atrodam CSRF token sīkdatnē
+			if (cookie.startsWith(name + '=')) {
+				cookieValue = decodeURIComponent(cookie.substring(name.length + 1))
+				break
+			}
+		}
+	}
+	return cookieValue
+}
 
+const roomMessages = document.getElementById('room-messages')
+const wsProtocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://'
+const roomCode = $('#roomCode').data('room-code')
+const socket = new WebSocket(
+	wsProtocol + window.location.host + `/ws/room/${roomCode}/`
+)
 
-// const roomMessages = document.getElementById("room-messages"); // Iegūstam elementu, kurā tiks attēloti ziņojumi.
-// const wsProtocol = window.location.protocol === "https:" ? "wss://" : "ws://";
-// const roomCode = $('#roomCode').data('room-code');
-// const socket = new WebSocket(wsProtocol + window.location.host + `/ws/some_path/${roomCode}/`);
+socket.addEventListener('message', event => {
+	const data = JSON.parse(event.data)
 
-// socket.onopen = (e) => {
-//     console.log("WebSocket connection opened.");
-// };
+	if (data.message) {
+		// Atjauniniet tērzēšanas logu ar ziņojumiem
+		appendRoomMessage(data.message)
+	}
 
-// socket.onmessage = (e) => {
-//     const data = JSON.parse(e.data);
-//     if (data.message) {
-//         appendRoomMessage(data.message);
-//     }
-//     if (data.leaveMessage) {
-//         appendRoomMessage(data.leaveMessage);
-//     }
-// };
+	if (data.message_leave) {
+		// Attēlojiet iziešanas ziņojumu tērzēšanas logā
+		appendLeaveMessage(data.message_leave)
+	}
 
-// // ... citas WebSocket funkcijas ...
+	if (data.message_join) {
+		// Attēlojiet pievienošanās ziņojumu tērzēšanas logā
+		appendJoinRoomMessage(data.message_join)
+	}
 
-// function appendRoomMessage(message) {
-//     // Attēlo ziņojumu tērzēšanas logā (HTML).
-//     const messageElement = document.createElement("p");
-//     messageElement.textContent = message;
-//     roomMessages.appendChild(messageElement);
-// }
+	if (data.readyCount !== undefined) {
+		// Atjauniniet gatavo spēlētāju skaitu
+		updateReadyCount(data.readyCount)
+	}
+	if (data.player_list) {
+		// Atjaunojiet spēlētāju sarakstu klienta pusē
+		updatePlayerList(data.player_list)
+	}
 
+	if (data.player_count !== undefined && data.max_players !== undefined) {
+		const playerCountElement = document.getElementById('player-count')
+		if (playerCountElement) {
+			playerCountElement.innerHTML = `${data.player_count} / ${data.max_players}`
+		}
+	}
 
-const roomMessages = document.getElementById("room-messages"); // Iegūstam elementu, kurā tiks attēloti ziņojumi.
-const wsProtocol = window.location.protocol === "https:" ? "wss://" : "ws://";
-const roomCode = $('#roomCode').data('room-code');
-const socket = new WebSocket(wsProtocol + window.location.host + `/ws/some_path/${roomCode}/`);
+	if (data.message) {
+		appendMessage(data.message)
+	}
+})
 
-socket.onopen = (e) => {
-    console.log("WebSocket connection opened.");
-};
+function appendLeaveMessage(message) {
+	// Attēlo ziņojumu tērzēšanas logā (HTML).
+	const messageElement = document.createElement('p')
+	messageElement.setAttribute('class', 'message-leave')
+	messageElement.textContent = message
+	roomMessages.appendChild(messageElement)
 
-socket.onmessage = (e) => {
-    const data = JSON.parse(e.data);
-    if (data.message) {
-        appendRoomMessage(data.message);
-    }
-    if (data.leaveMessage) {
-        appendLeaveMessage(data.leaveMessage);
-    }
-    if (data.join_message) {
-      appendJoinRoomMessage(data.joinMessage);
-  }
-};
-
-// ... citas WebSocket funkcijas ...
-
-// function appendRoomMessage(message) {
-//     // Attēlo ziņojumu tērzēšanas logā (HTML).
-//     const messageElement = document.createElement("p");
-//     messageElement.textContent = message;
-//     messageElement.classList.add("message-leave")
-//     roomMessages.appendChild(messageElement);
-// }
-
-function appendRoomMessage(message) {
-  // Attēlo ziņojumu tērzēšanas logā (HTML).
-  const messageElement = document.createElement("p");
-  messageElement.setAttribute("class", "message-leave");
-  messageElement.textContent = message;
-  roomMessages.appendChild(messageElement);
-
-  // Uzstāda timeout, lai noņemtu ziņojumu pēc 10 sekundēm.
-  setTimeout(() => {
-      roomMessages.removeChild(messageElement);
-  }, 10000); // 10000 milisekundes (10 sekundes)
+	// Uzstāda timeout, lai noņemtu ziņojumu pēc 10 sekundēm.
+	setTimeout(() => {
+		roomMessages.removeChild(messageElement)
+	}, 10000) // 10000 milisekundes (10 sekundes)
 }
 
 function appendJoinRoomMessage(message) {
-  // Attēlo ziņojumu tērzēšanas logā (HTML).
-  const messageElement = document.createElement("p");
-  messageElement.setAttribute("class", "message-Join");
+	// Attēlo ziņojumu tērzēšanas logā (HTML).
+	const messageElement = document.createElement('p')
+	messageElement.setAttribute('class', 'message-Join')
+	messageElement.textContent = message
+	roomMessages.appendChild(messageElement)
 
-  messageElement.textContent = message;
-  roomMessages.appendChild(messageElement);
+	// Uzstāda timeout, lai noņemtu ziņojumu pēc 10 sekundēm.
+	setTimeout(() => {
+		roomMessages.removeChild(messageElement)
+	}, 10000) // 10000 milisekundes (10 sekundes)
+}
 
-  // Uzstāda timeout, lai noņemtu ziņojumu pēc 10 sekundēm.
-  setTimeout(() => {
-      roomMessages.removeChild(messageElement);
-  }, 10000); // 10000 milisekundes (10 sekundes)
+const readyButton = document.getElementById('ready-button')
+const readyStatus = document.getElementById('ready-status')
+const readyCount = document.getElementById('ready-count')
+const info = document.getElementById('info')
+
+if (readyButton) {
+	readyButton.addEventListener('click', () => {
+		// Nosūtiet WebSocket ziņojumu "ready" uz serveri
+		readyButton.style.display = 'none'
+		info.style.display = 'block'
+
+		socket.send(JSON.stringify({ ready: true }))
+		console.log('hello')
+	})
+}
+
+// ...
+
+// Pievienojiet klausītāju, lai apstrādātu ziņojumu par gatavību
+socket.addEventListener('message', event => {
+	const data = JSON.parse(event.data)
+	if (data.readyCount !== undefined) {
+		// Atjauniniet gatavo spēlētāju skaitu
+		readyCount.innerText = data.readyCount
+	}
+})
+
+function updateReadyCount(readyCount) {
+	const readyCountElement = document.getElementById('readyCount')
+	if (readyCountElement) {
+		readyCountElement.innerHTML = readyCount
+	}
+}
+
+// Ieklausieties atjauninājumos no servera
+socket.onmessage = event => {
+	const data = JSON.parse(event.data)
+	if (data.readyCount !== undefined) {
+		updateReadyCount(data.readyCount)
+	}
+}
+
+function updatePlayerList(playerList) {
+	const playerListElement = document.getElementById('player-list') // Aizvietojiet ar jūsu spēlētāju saraksta HTML elementu
+	playerListElement.innerHTML = '' // Notīra esošo sarakstu
+
+	playerList.forEach(player => {
+		const playerElement = document.createElement('li')
+		playerElement.className = 'player-list'
+		playerElement.setAttribute('data-player-id', player.id)
+
+		if (player.is_owner) {
+			const crownIcon = document.createElement('i')
+			crownIcon.className = 'fas fa-crown'
+			playerElement.appendChild(crownIcon)
+
+			const strongElement = document.createElement('strong')
+			strongElement.textContent = player.username
+			playerElement.appendChild(strongElement)
+		} else {
+			playerElement.textContent = player.username
+		}
+
+		playerListElement.appendChild(playerElement)
+	})
+}
+
+function updatePlayerCount(playerCount, maxPlayers) {
+	const playerCountSpan = document.getElementById('player-count')
+	if (playerCountSpan) {
+		playerCountSpan.textContent = `${playerCount} / ${maxPlayers}`
+	}
 }
