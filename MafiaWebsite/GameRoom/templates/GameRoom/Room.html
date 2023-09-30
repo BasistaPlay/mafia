@@ -27,7 +27,6 @@ Mafia | Room
 <div id="room-messages"></div>
 
 <div id="room-container">
-  {% comment %} <h1 class='room'>Room: {{ room.code }}</h1> {% endcomment %}
   <h1 class='room' id='roomHeader'>
     <span class="room-text">Room:</span>
     <span id='roomCode' data-room-code="{{room.code}}">******</span>
@@ -46,25 +45,12 @@ Mafia | Room
           {% else %}
             {{ player.user.username }}
             {% if not player.is_owner and player.user != request.user %}
-            {% comment %} <a href="{% url 'GameRoom:remove-player' player_id=player.id %}" class="remove-player-link" data-player-id="{{ player.id }}">Remove</a>
-            <a href="#" class="assign-owner-link" data-player-id="{{ player.id }}">Assign as Owner</a> {% endcomment %}
             {% endif %}
           {% endif %}
         </li>
       {% endfor %}
     </ul>
-    <div id="game-controls">
-      {% if current_user_is_owner %}
-          <button id="start-game">Start Game</button>
-      {% endif %}
-  </div>
-
-  {% if room.player_count == room.max_players %}
-  <div id="ready-status" class='ready-status'>
-    <button id="ready-button" class='ready-button'>Ready</button>
-      <p class='ready-button' id='info' style="display: none;">Ready Players: <span id="ready-count">0</span></p>
-  </div>
-  {% endif %}
+    <button id="start-game-button" disabled>Start Game</button>
   </div>
 </div>
 
@@ -87,24 +73,12 @@ Mafia | Room
 <div id="current-username" data-current-username="{{ request.user.username }}" style="display: none;"></div>
 
 
-{% comment %} <div id="localVideo">
-  <video id="video" width="640" height="480" autoplay></video>
-  <button id="startButton">Start Capture</button>
-  <button id="stopButton" disabled>Stop Capture</button>
-  <audio id="audio" controls></audio>
-</div> {% endcomment %}
-
 <div id="remoteVideos"></div>
 <!-- Ielādēt jQuery bibliotēku -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="{% static 'GameRoom/js/chat.js' %}"></script>
 <script src="{% static 'GameRoom/js/room.js' %}"></script>
 <script src="{% static 'GameRoom/js/video.js' %}"></script>
-
-
-<script>
-  // Izmantojiet setupChat funkciju, lai inicializētu čatu, un pārbaudiet un izdzēsiet istabu pēc noteiktā laika
-</script>
 
 {% endblock %}
 

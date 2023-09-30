@@ -1,135 +1,93 @@
-document.addEventListener('DOMContentLoaded', function () {
-	setInterval(updateRooms, 5000) // Atjaunina istabu sarakstu ik pēc 5 sekundēm
-})
+const roomListBody = document.getElementById('room-list-body');
+const wsProtocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+const csrfToken = getCsrfToken();
 
-function updateRooms() {
-	$.ajax({
-		url: '/game-room/get_room_data/', // Aizvietojiet ar savu URL
-		type: 'GET',
-		dataType: 'json',
-		success: function (data) {
-			var roomListBody = document.getElementById('room-list-body')
-			roomListBody.innerHTML = '' // Notīra esošo sarakstu
+const socket = new WebSocket(
+    `${wsProtocol}${window.location.host}/ws/room-list/?csrf_token=${csrfToken}`
+);
 
-			data.room_data.forEach(room => {
-				if (room.player_count < room.max_players) {
-					var roomRow = document.createElement('tr')
-					roomRow.classList.add('data')
+socket.addEventListener('open', () => {
+    const message = {
+        type: 'get_rooms',
+    };
+    socket.send(JSON.stringify(message));
+});
 
-					var roomCodeCell = document.createElement('th')
-					roomCodeCell.textContent = room.code
-					roomRow.appendChild(roomCodeCell)
+socket.addEventListener('message', (event) => {
+    const data = JSON.parse(event.data);
 
-					var playerCountCell = document.createElement('th')
-					var playerCountSpan = document.createElement('span')
-					playerCountSpan.classList.add('player-count')
-					playerCountSpan.dataset.playerCount = room.player_count
-					playerCountSpan.textContent = room.player_count
-					playerCountCell.appendChild(playerCountSpan)
+    if (data.type === 'room_update') {
+        roomListBody.innerHTML = ''; // Notīram esošo sarakstu
 
-					playerCountCell.innerHTML += ' / '
+        data.rooms.forEach((room) => {
+            if (room.player_count !== room.max_players) {
+                const row = document.createElement('tr');
+                row.classList.add('data');
 
-					var maxPlayersSpan = document.createElement('span')
-					maxPlayersSpan.classList.add('max-players')
-					maxPlayersSpan.dataset.maxPlayers = room.max_players
-					maxPlayersSpan.textContent = room.max_players
-					playerCountCell.appendChild(maxPlayersSpan)
+                const codeCell = document.createElement('th');
+                codeCell.textContent = room.code;
+                row.appendChild(codeCell);
 
-					roomRow.appendChild(playerCountCell)
+                const playerCountCell = document.createElement('th');
+                playerCountCell.innerHTML = `
+                    <span class="player-count" data-player-count="${room.player_count}">
+                        ${room.player_count}
+                    </span> / 
+                    <span class="max-players" data-max-players="${room.max_players}">
+                        ${room.max_players}
+                    </span>
+                `;
+                row.appendChild(playerCountCell);
 
-					var privateCell = document.createElement('th')
-					var privateIcon = document.createElement('i')
-					privateIcon.classList.add(
-						'fas',
-						room.is_private ? 'fa-lock' : 'fa-unlock'
-					)
-					if (!room.is_private) {
-						privateIcon.style.color = '#ffffff'
-					}
-					privateCell.appendChild(privateIcon)
-					roomRow.appendChild(privateCell)
+                const isPrivateCell = document.createElement('th');
+                isPrivateCell.innerHTML = room.is_private
+                    ? '<i class="fas fa-lock"></i>'
+                    : '<i class="fas fa-unlock" style="color: #ffffff;"></i>';
+                row.appendChild(isPrivateCell);
 
-					var joinCell = document.createElement('th')
-					var joinForm = document.createElement('form')
-					joinForm.classList.add('join-room-form')
-					joinForm.dataset.roomCode = room.code
+                const joinCell = document.createElement('th');
+                if (room.is_private) {
+                    joinCell.innerHTML = `
+                        <form method="post" name="join-room-form" class="join-room-form" data-room-code="${room.code}">
+                            <input type="hidden" name="room_code" value="${room.code}">
+                            <input class="password" type="password" name="password" placeholder="Enter the password" data-room-code="${room.code}">
+                            <input type="hidden" name="csrfmiddlewaretoken" value="${csrfToken}">
+                            <button class="join-room-link" type="submit">Join</button>
+                        </form>
+                    `;
+                } else {
+                    joinCell.innerHTML = `
+                        <form method="post" name="join-room-form" class="join-room-form" data-room-code="${room.code}">
+                            <input type="hidden" name="room_code" value="${room.code}">
+                            <input type="hidden" name="csrfmiddlewaretoken" value="${csrfToken}">
+                            <button class="join-room-link" type="submit">Join</button>
+                        </form>
+                    `;
+                }
+                row.appendChild(joinCell);
 
-					if (room.is_private) {
-						var passwordInput = document.createElement('input')
-						passwordInput.classList.add('password')
-						passwordInput.type = 'password'
-						passwordInput.name = 'password'
-						passwordInput.placeholder = 'Enter the password'
-						passwordInput.dataset.roomCode = room.code
-						joinForm.appendChild(passwordInput)
-					}
+                roomListBody.appendChild(row);
+            }
+        });
+    } else if (data.type === 'success') {
+        // Apstrādājam veiksmes ziņojumus (piemēram, kad lietotājs pievienojas istabai)
+        console.log(data.message);
+    } else if (data.type === 'error') {
+        // Apstrādājam kļūdas ziņojumus (piemēram, kad ievadīta nepareiza parole)
+        console.error(data.error);
+    }
+});
 
-					var joinButton = document.createElement('button')
-					joinButton.classList.add('join-room-link')
-					joinButton.type = 'submit'
-					joinButton.textContent = 'Join'
-					joinForm.appendChild(joinButton)
+// Atjaunojam datus ik pec 15 sekundēm
+setInterval(() => {
+    console.log('refresh')
+    const message = {
+        type: 'get_rooms',
+    };
+    socket.send(JSON.stringify(message));
+}, 15000);
 
-					joinCell.appendChild(joinForm)
-					roomRow.appendChild(joinCell)
-
-					roomListBody.appendChild(roomRow)
-				}
-			})
-		},
-		error: function (error) {
-			console.error('Kļūda atjauninot istabu sarakstu:', error)
-		},
-	})
-}
-
-function joinRoom(roomCode) {
-	// Jūsu esošā koda loģika, piemēram, localStorage saglabāšana utt.
-
-	// Pāradresācija uz jūsu apstrādes funkciju ar pareizi sagatavotiem datiem
-	handleJoinRoom(roomCode)
-}
-
-function handleJoinRoom(roomCode) {
-	const formData = new FormData()
-	formData.append('real_code', roomCode)
-
-	fetch('/game-room/join-room/', {
-		method: 'POST',
-		body: formData,
-		headers: {
-			'X-CSRFToken': getCookie('csrftoken'),
-		},
-	})
-		.then(response => {
-			if (response.ok) {
-				// Pāradresācija uz vēlamo istabu
-				window.location.href = `/game-room/room/${roomCode}/`
-			} else {
-				// Apstrādāt kļūdas, ja tādas ir
-				const errorContainer = document.querySelector('.error')
-				errorContainer.textContent = 'Room is full or there was an error.'
-				errorContainer.style.display = 'block'
-			}
-		})
-		.catch(error => {
-			// Apstrādāt fetch kļūdas, ja tādas ir
-			console.error('Error joining room:', error)
-		})
-}
-
-// Palīgfunkcija, lai iegūtu CSRF token no sīkfaila
-function getCookie(name) {
-	var cookieValue = null
-	if (document.cookie && document.cookie !== '') {
-		var cookies = document.cookie.split(';')
-		for (var i = 0; i < cookies.length; i++) {
-			var cookie = cookies[i].trim()
-			if (cookie.substring(0, name.length + 1) === name + '=') {
-				cookieValue = decodeURIComponent(cookie.substring(name.length + 1))
-				break
-			}
-		}
-	}
-	return cookieValue
+function getCsrfToken() {
+    const csrfCookie = document.cookie.match(/csrftoken=([^;]+)/);
+    return csrfCookie ? csrfCookie[1] : null;
 }

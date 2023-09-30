@@ -59,6 +59,7 @@ Mafia | Join room
             <th>Join room</th>
           </tr>
           <tbody id="room-list-body">
+            {% csrf_token %}
             {% for room in rooms %}
             {% if room.player_count == room.max_players %}
             {% else %}
@@ -76,6 +77,7 @@ Mafia | Join room
               <th>
                 <form method="post" name='join-room-form' class="join-room-form" data-room-code="{{ room.code }}">
                   {% csrf_token %}
+                  <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
                   <input type="hidden" name="room_code" value="{{ room.code }}">
                   {% if room.is_private %}
                   <input class='password' type="password" name="password" placeholder="Enter the password" data-room-code="{{ room.code }}">

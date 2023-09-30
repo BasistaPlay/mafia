@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const chatLog = document.querySelector('#chat-box');
         const chatMessage = document.querySelector('#message-input');
         const chatSend = document.querySelector('#send-button');
-        const roomCode = $('#roomCode').data('room-code')
+        const roomCode = $('#roomCode').data('room-code');
 
         // Izveidojiet WebSocket savienojumu
         const socket = new WebSocket(

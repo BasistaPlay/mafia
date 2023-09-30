@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from mainpage.views import *
+from mainpage.views import home, register, login_view
 from django.contrib.auth import views as auth_views
 from mainpage import views
 from allauth.account.views import confirm_email
@@ -26,19 +26,20 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', home, name='home' ),
+    path('', home, name='home'),
     path('register/', register, name='register'),
     path('login/', login_view, name='login'),
     path('accounts/', include('allauth.urls')),
 
     # Aizmirsu paroli
     path('forgot_password/', views.forgot_password, name='forgot_password'),
-    path('reset_password/<str:uidb64>/<str:token>/', views.reset_password, name='reset_password'),
+    path('reset_password/<str:uidb64>/<str:token>/',
+         views.reset_password, name='reset_password'),
 
-    #verifikacija epasta
+    # verifikacija epasta
     path('activate/<str:uidb64>/<str:token>/', views.activate, name='activate'),
 
-    #GameRoom
+    # GameRoom
     path('menu/', GameRoom.menu, name='menu'),
     path('game-room/', include('GameRoom.urls', namespace='GameRoom')),
     path('logout/', GameRoom.logout_view, name='logout'),
