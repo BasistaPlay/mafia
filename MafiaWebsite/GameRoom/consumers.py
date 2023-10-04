@@ -21,13 +21,11 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
 
         await self.accept()
         await self.join_room()
-        await self.check_room_status()
 
     async def disconnect(self, close_code):
         await self.leave_room()
         await self.update_player_list()
         await self.update_player_count()
-        await self.check_room_status()
 
     async def join_room(self):
         player_username = self.scope['user'].username
@@ -87,7 +85,6 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
 
         await sync_to_async(transaction.commit)()
         await self.send_leave_message(player_username)
-        await self.check_room_status()
 
     async def send_leave_message(self, player_username):
         message_leave = f"{player_username} has left the room."
@@ -181,6 +178,28 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
             return GameRoom.objects.get(code=room_code)
         except GameRoom.DoesNotExist:
             return None
+
+    async def update_player_list(self):
+        player_list = await self.get_player_list()
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                'type': 'player_list_update',
+                'player_list': player_list,
+            }
+        )
+
+        # Check if the room is full and show the start game button if it is
+        player_count = await self.get_player_count()
+        max_players = await self.get_room_data(self.room_code).max_players
+        if player_count == max_players:
+            await self.send(text_data=json.dumps({
+                'show_start_game_button': True,
+            }))
+        else:
+            await self.send(text_data=json.dumps({
+                'show_start_game_button': False,
+            }))
 
 
 class ChatConsumer(AsyncWebsocketConsumer):

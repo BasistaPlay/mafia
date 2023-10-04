@@ -9,12 +9,12 @@ $(document).ready(function () {
 			roomCodeElement.text() === '******' ? roomCode : '******'
 		);
 	});
-})
+});
 
 
 // Funkcija, lai iegūtu CSRF token no sīkdatnēm
 function getCookie(name) {
-	let cookieValue = null
+	let cookieValue = null;
 	if (document.cookie && document.cookie !== '') {
 		const cookies = document.cookie.split(';');
 		for (let i = 0; i < cookies.length; i++) {
@@ -71,8 +71,9 @@ socket.addEventListener('message', event => {
 	if (data.message) {
 		appendMessage(data.message)
 	}
+	
 
-})
+});
 
 function appendLeaveMessage(message) {
 	// Attēlo ziņojumu tērzēšanas logā (HTML).
