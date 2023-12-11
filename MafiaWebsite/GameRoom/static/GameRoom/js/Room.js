@@ -101,14 +101,6 @@ function appendJoinRoomMessage(message) {
 	}, 10000) // 10000 milisekundes (10 sekundes)
 }
 
-// Ieklausieties atjauninājumos no servera
-socket.onmessage = event => {
-	const data = JSON.parse(event.data);
-	if (data.readyCount !== undefined) {
-		updateReadyCount(data.readyCount);
-	}
-};
-
 function updatePlayerList(playerList) {
 	const playerListElement = document.getElementById('player-list') // Aizvietojiet ar jūsu spēlētāju saraksta HTML elementu
 	playerListElement.innerHTML = '' // Notīra esošo sarakstu

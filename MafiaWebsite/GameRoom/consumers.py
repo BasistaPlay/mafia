@@ -191,7 +191,8 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
 
         # Check if the room is full and show the start game button if it is
         player_count = await self.get_player_count()
-        max_players = await self.get_room_data(self.room_code).max_players
+        room_data = await self.get_room_data(self.room_code)
+        max_players = room_data.max_players
         if player_count == max_players:
             await self.send(text_data=json.dumps({
                 'show_start_game_button': True,

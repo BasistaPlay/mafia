@@ -95,10 +95,10 @@ WSGI_APPLICATION = 'MafiaWebsite.wsgi.application'
 ASGI_APPLICATION = 'MafiaWebsite.asgi.application'
 
 CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)],
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
         },
     },
 }
@@ -111,7 +111,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'mafia_website',
         'USER': 'root',
-        'PASSWORD': 'Edvards7410',
+        'PASSWORD': '',
         'HOST': '127.0.0.1',
         'PORT': '3306',
         'OPTIONS': {
@@ -190,6 +190,12 @@ JAZZMIN_SETTINGS = {
     'icons': {  # Customize icons for specific models or apps
         'app.Model': 'fas fa-icon',  # Replace 'app.Model' with your desired model
         'auth.User': 'fas fa-user',
+        'gameroom.GameRoom': 'fas fa-door-open',
+        'gameroom.Player': 'fas fa-users',
+        'game.role': 'fas fa-star',
+        'game.location': 'fas fa-map-marker',
+        'mainpage.Profile': 'fas fa-id-card',
+
     },
     # ... other customization options ...
 }

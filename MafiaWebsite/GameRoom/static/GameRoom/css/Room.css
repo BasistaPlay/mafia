@@ -270,44 +270,6 @@ body {
 .input {
 	z-index: 1;
 }
-
-.start-game-button {
-	position: relative;
-	background-color: #13aa52;
-	border: 1px solid #13aa52;
-	border-radius: 4px;
-	box-shadow: rgba(0, 0, 0, 0.1) 0 2px 4px 0;
-	box-sizing: border-box;
-	width: 360px;
-	left: 20%;
-	color: #fff;
-	cursor: pointer;
-	font-family: 'Akzidenz Grotesk BQ Medium', -apple-system, BlinkMacSystemFont,
-		sans-serif;
-	font-size: 16px;
-	font-weight: 400;
-	outline: none;
-	outline: 0;
-	padding: 10px 25px;
-	text-align: center;
-	transform: translateY(0);
-	transition: transform 150ms, box-shadow 150ms;
-	user-select: none;
-	-webkit-user-select: none;
-	touch-action: manipulation;
-	margin-bottom: 10px;
-}
-
-.start-game-button:hover {
-	box-shadow: rgba(0, 0, 0, 0.15) 0 3px 9px 0;
-	transform: translateY(-2px);
-}
-
-@media (min-width: 768px) {
-	.start-game-button {
-		padding: 10px 30px;
-	}
-}
 #overlay {
 	position: fixed;
 	top: 0;
@@ -408,76 +370,105 @@ body {
 	cursor: pointer; /* Mainiet pelējuma formu, kad noklikšķināt */
 }
 
-.my-message {
-	text-align: right;
-}
 
-.other-message {
-	text-align: left;
-}
-
-.hidden {
-	background: #101010;
-	display: none;
-}
-
-#black-screen {
-	background-color: #000000;
-}
-
-#startButton {
+#startgame {
 	position: relative;
-}
-
-.ready-button {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	width: 250px;
-	text-align: center;
-	font-family: inherit;
-	font-weight: 500;
-	font-size: 16px;
-	padding: 0.7em 1.4em 0.7em 1.1em;
-	color: white;
-	background: #ad5389;
-	background: linear-gradient(
-		0deg,
-		rgba(20, 167, 62, 1) 0%,
-		rgba(102, 247, 113, 1) 100%
-	);
+	bottom: 10px;
+	left: 50%;
+	transform: translateX(-50%);
+	background-color: #92909062;
+	color: #fff;
+	text-decoration: none;
+	text-transform: uppercase;
 	border: none;
-	box-shadow: 0 0.7em 1.5em -0.5em #14a73e98;
-	letter-spacing: 0.05em;
-	border-radius: 20em;
-	cursor: pointer;
-	user-select: none;
-	-webkit-user-select: none;
-	touch-action: manipulation;
+	letter-spacing: 0.1rem;
+	font-size: 1rem;
+	padding: 1rem 3.5em;
+	transition: 0.2s;
 }
 
-.ready-button:hover {
-	box-shadow: 0 0.5em 1.5em -0.5em #14a73e98;
+#startgame:hover {
+	letter-spacing: 0.2rem;
+	padding: 1.1rem 3.1rem;
+	background: var(--clr);
+	color: var(--clr);
+	animation: box 3s infinite;
 }
 
-.ready-button:active {
-	box-shadow: 0 0.5em 1em -0.5em #14a73e98;
+#startgame::before {
+	content: "";
+	position: absolute;
+	inset: 2px;
+	background: #3a3a3a;
 }
 
-.ready-status {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	padding: 20px;
+#startgame span {
+	position: relative;
+	z-index: 1;
 }
 
-
-.right-message {
-	text-align: right;
-	/* Papildus stili jūsu ziņojumiem no labās puses */
+#startgame i {
+	position: absolute;
+	inset: 0;
+	display: block;
 }
 
-.left-message {
-	text-align: left;
-	/* Papildus stili citiem lietotāju ziņojumiem no kreisās puses */
+#startgame i::before {
+	content: "";
+	position: absolute;
+	width: 10px;
+	height: 2px;
+	left: 80%;
+	top: -2px;
+	border: 2px solid var(--clr);
+	background: #454544;
+	transition: 0.2s;
+}
+
+#startgame:hover i::before {
+	width: 15px;
+	left: 20%;
+	animation: move 3s infinite;
+}
+
+#startgame i::after {
+	content: "";
+	position: absolute;
+	width: 10px;
+	height: 2px;
+	left: 20%;
+	bottom: -2px;
+	border: 2px solid var(--clr);
+	background: #272822;
+	transition: 0.2s;
+}
+
+#startgame:hover i::after {
+	width: 15px;
+	left: 80%;
+	animation: move 3s infinite;
+}
+
+@keyframes move {
+	0% {
+			transform: translateX(0);
+	}
+	50% {
+			transform: translateX(5px);
+	}
+	100% {
+			transform: translateX(0);
+	}
+}
+
+@keyframes box {
+	0% {
+			box-shadow: #27272c;
+	}
+	50% {
+			box-shadow: 0 0 25px var(--clr);
+	}
+	100% {
+			box-shadow: #27272c;
+	}
 }
