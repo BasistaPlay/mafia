@@ -12,6 +12,11 @@ import json
 # Create your views here.
 
 
+def test(request):
+    return render(request, 'GameRoom/test.html', {
+    })
+
+
 def menu(request):
     # Iegūstam izmetā lietotāja informāciju no sesijas (ja tā ir)
     removed_player_username = request.session.pop(

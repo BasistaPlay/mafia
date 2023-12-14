@@ -11,6 +11,7 @@ class Player(models.Model):
 
 class Role(models.Model):
     name = models.CharField(max_length=100)
+    image = models.ImageField(upload_to='role_images/', null=True, blank=True)
     description = models.TextField()
 
     def __str__(self):
