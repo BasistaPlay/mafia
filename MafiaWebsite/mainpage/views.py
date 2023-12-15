@@ -1,5 +1,5 @@
 from django.http import HttpResponse, HttpResponseNotFound, Http404
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.tokens import default_token_generator
@@ -13,6 +13,7 @@ from django.utils import timezone
 from django.core.management import call_command
 from django.conf import settings
 from django.utils.html import strip_tags
+from django.core.mail import EmailMessage, send_mail
 
 
 # Create your views here.
@@ -25,6 +26,7 @@ def home(request):
         # Ja lietotājs nav pieslēdzies, renderē sakumlapu
         return render(request, 'mainpage/home.html')
 
+
 def register(request):
     if request.method == 'POST':
         username = request.POST['username']
@@ -36,52 +38,64 @@ def register(request):
         successful_messages = []
 
         if User.objects.filter(username=username).exists():
-            error_messages.append('This username is already taken. Please choose another username.')
+            error_messages.append(
+                'This username is already taken. Please choose another username.')
 
         if User.objects.filter(email=email).exists():
-            error_messages.append('There is already an account with this email.')
+            error_messages.append(
+                'There is already an account with this email.')
 
         if password != password2:
-            error_messages.append("The password didn't match, please enter a valid password.")
+            error_messages.append(
+                "The password didn't match, please enter a valid password.")
 
         if error_messages:
             return render(request, 'mainpage/register.html', {'error_messages': error_messages})
 
-        user = User.objects.create_user(username=username, email=email, password=password)
+        user = User.objects.create_user(
+            username=username, email=email, password=password)
         user.is_active = False
         user.save()
 
         # Saglabā informāciju par e-pasta apstiprinājumu
-        profile = Profile.objects.create(user=user, verification_sent_at=timezone.now())
-        #Parbauda vai ir neaktivu profilu 30min un ja ir tad izdzes
+        profile = Profile.objects.create(
+            user=user, verification_sent_at=timezone.now())
+        # Parbauda vai ir neaktivu profilu 30min un ja ir tad izdzes
         call_command('delete_unverified_profiles')
         # Sūta e-pasta verifikācijas linku uz lietotāja e-pastu
         current_site = get_current_site(request)
-        mail_subject = 'Activate your account'
-        message = render_to_string('mainpage/activation_email.html', {
-            'user': user,
-            'domain': current_site.domain,
+
+        context = {
+            'user': user.username,
+            'domain': get_current_site(request).domain,
             'uid': urlsafe_base64_encode(force_bytes(user.pk)),
             'token': default_token_generator.make_token(user),
-        })
+        }
+        message = render_to_string(
+            'mainpage/activation_email.html', context=context)
 
-        send_mail(
-            subject = mail_subject,
-            message = message,
-            recipient_list = [email],
-            from_email = 'mafiagameeee@gmail.com',
+        email = EmailMessage(
+            'Activate your account',
+            message,
+            'team@mafiawebsite.xyz',
+            [email],
         )
-        successful_messages.append('Please check your email for the confirmation link. If you haven\'t received the email, please also check your spam folder. If you still haven\'t received it, you can request a new confirmation email by visiting the Resend Confirmation page.')
-        return render(request, 'mainpage/login.html', {'successful_messages' : successful_messages})  # Pāreja uz pieteikšanās lapu
+
+        email.content_subtype = 'html'
+        email.send()
+
+        successful_messages.append(
+            'Please check your email for the confirmation link. If you haven\'t received the email, please also check your spam folder. If you still haven\'t received it, you can request a new confirmation email by visiting the Resend Confirmation page.')
+        # Pāreja uz pieteikšanās lapu
+        return render(request, 'mainpage/login.html', {'successful_messages': successful_messages})
 
     return render(request, 'mainpage/register.html')
 
+
 def activate(request, uidb64, token):
-    error_messages = []
-    successful_messages = []
     try:
         uid = force_str(urlsafe_base64_decode(uidb64))
-        user = User.objects.get(pk=uid)
+        user = get_object_or_404(User, pk=uid)
     except (TypeError, ValueError, OverflowError, User.DoesNotExist):
         user = None
 
@@ -89,16 +103,17 @@ def activate(request, uidb64, token):
         user.is_active = True
         user.save()
 
-        # Atrodi attiecīgo lietotāja profilu
-        profile = Profile.objects.get(user=user)
+        # Atrodi vai izveido lietotāja profilu
+        profile, created = Profile.objects.get_or_create(user=user)
 
-        # Izdzēs profilu
-        profile.delete()
+        # Izdzēs profilu, ja tas eksistē
+        if not created:
+            profile.delete()
 
-        successful_messages.append('Email verification successful. You can now log in.')
-        return render(request, 'mainpage/login.html', {'successful_messages' : successful_messages})
+        return render(request, 'mainpage/activate_success.html')
     else:
         return render(request, 'mainpage/register.html')
+
 
 def login_view(request):
     if request.method == 'POST':
@@ -114,7 +129,7 @@ def login_view(request):
             return render(request, 'mainpage/login.html', {'error_message': error_message})
     else:
         return render(request, 'mainpage/login.html')
-    
+
 
 def forgot_password(request):
     error_messages = []
@@ -130,7 +145,8 @@ def forgot_password(request):
             # Generate password reset token and link
             token = default_token_generator.make_token(user)
             uid = urlsafe_base64_encode(force_bytes(user.pk))
-            reset_link = request.build_absolute_uri(f'/reset_password/{uid}/{token}/')
+            reset_link = request.build_absolute_uri(
+                f'/reset_password/{uid}/{token}/')
 
             # Render the HTML email template
             html_message = render_to_string('forgetpassword/password_reset_email.html', {
@@ -143,11 +159,13 @@ def forgot_password(request):
 
             # Send password reset email
             subject = 'Password Reset Request'
-            send_mail(subject, plain_message, settings.EMAIL_HOST_USER, [email], html_message=html_message)
+            send_mail(subject, plain_message, settings.EMAIL_HOST_USER, [
+                      email], html_message=html_message)
 
         return render(request, 'forgetpassword/password_reset_sent.html')
 
     return render(request, 'forgetpassword/forgot_password.html')
+
 
 def reset_password(request, uidb64, token):
     error_messages = []
@@ -172,7 +190,8 @@ def reset_password(request, uidb64, token):
                     success_message = "Your password has been successfully changed. Please login with your new password."
                     return render(request, 'mainpage/login.html', {'success_message': success_message})
                 else:
-                    error_messages.append("The passwords you entered do not match.")
+                    error_messages.append(
+                        "The passwords you entered do not match.")
             else:
                 error_messages.append("Please enter a valid password.")
         else:

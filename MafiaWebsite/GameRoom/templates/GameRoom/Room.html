@@ -43,12 +43,14 @@ Mafia | Room
           <i class="fas fa-crown"></i>
             <strong>{{ player.user.username }}</strong>
           {% else %}
-            {{ player.user.username }}
-            {% if not player.is_owner and player.user != request.user %}
-            {% endif %}
+          {{ player.user.username }}
+          {% if not player.is_owner and player.user != request.user %}
+            <button class='revoke-owner-button' data-player-id="{{ player.id }}">Revoke Owner</button>
+            <button class='transfer-owner-button' data-player-id="{{ player.id }}">Transfer Owner</button>
           {% endif %}
-        </li>
-      {% endfor %}
+        {% endif %}
+      </li>
+    {% endfor %}
     </ul>
     <button id='startgame' style="--clr:#39FF14"><span>Start game</span><i></i></button>
   </div>

@@ -1,0 +1,52 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% load socialaccount %}
+
+
+{% block title %}
+Mafia | Activation Successful
+{% endblock %}
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'mainpage/css/register.css' %}" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+    <style>
+      p {
+          color: #aaaaaa;
+          text-align: center;
+      }
+
+  </style>
+{% endblock %}
+
+{% block body %}
+
+<a href='{% url "home" %}' class='arrow'><span>&#8249;</span></a>
+<div class="lights-container">
+    <div class="redlight"></div>
+    <div class="bluelight"></div>
+    <div class="redlight-small"></div>
+    <div class="bluelight-small"></div>
+
+    <form method="POST">
+        <div class="title" id="title">Activation Successful</div>
+        <a class="testing" href="{% url 'login' %}">Login</a>
+        <p>Your Mafia Game account has been successfully activated.</p>
+        <p>If you have any issues, please contact our support team.</p>
+        <p>Best regards,<br> The Mafia Game Team</p>
+
+
+    
+
+    </form>
+
+
+{% endblock %}
+
+{% block js %}
+
+<script src="{% static 'mainpage/js/register.js' %}"></script>
+<script src="https://kit.fontawesome.com/your-fontawesome-kit.js" crossorigin="anonymous"></script>
+
+{% endblock %}
