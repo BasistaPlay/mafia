@@ -41,6 +41,12 @@ Mafia | Menu
     <a href="{% url 'GameRoom:test' %}" class="button" data-text="Instructions">Instructions</a>
 </section>
 
+{% if user.is_staff %}
+    <section>
+        <a href="{% url 'admin:index' %}" class="button" data-text="Admin Panel">Admin Panel</a>
+    </section>
+{% endif %}
+
 <img class="background-image" src="{% static 'mainpage/img/mainpageimg.jpg' %}" alt="Background Image">
 
 {% endblock %}
