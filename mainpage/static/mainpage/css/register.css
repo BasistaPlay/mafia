@@ -1,0 +1,640 @@
+/* html, body{
+	position: relative;
+	width: 100%;
+	height: 100%;
+	margin: 0px;
+} */
+
+/* body{
+	background-color: #101010;
+	overflow: hidden;
+} */
+
+/* @keyframes rotate{
+	0%{transform: rotate(0deg)}
+	50%{transform: rotate(15deg)}
+	100%{transform: rotate(0deg)}
+} */
+
+.lights-container{
+	display: table;
+	width: 100%;
+	height: 100%;
+	animation: rotate 1s infinite;
+}
+
+@keyframes redlight{
+	0%{opacity: 1;}
+	60%{opacity: 1;}
+	65%{opacity: 0;}
+	70%{opacity: 1;}
+	75%{opacity: 0;}
+	80%{opacity: 1;}
+	90%{opacity: 0;}
+	100%{opacity: 1;}
+}
+
+@keyframes bluelight{
+	0%{opacity: 1;}
+	10%{opacity: 0;}
+	15%{opacity: 1;}
+	20%{opacity: 0;}
+	25%{opacity: 1;}
+	30%{opacity: 0;}
+	40%{opacity: 1;}
+	100%{opacity: 1;}
+}
+
+@keyframes redlight-small{
+	0%{opacity: 1;}
+	60%{opacity: 1;}
+	70%{opacity: 0;}
+	80%{opacity: 1;}
+	90%{opacity: 0;}
+	100%{opacity: 1;}
+}
+
+@keyframes bluelight-small{
+	0%{opacity: 1;}
+	10%{opacity: 0;}
+	20%{opacity: 1;}
+	30%{opacity: 0;}
+	40%{opacity: 1;}
+	100%{opacity: 1;}
+}
+
+.redlight,.bluelight{
+	width: 100%;
+	height: 150%;
+	border-radius: 50%;
+	display: table-cell;
+	vertical-align: middle;
+	position: absolute;
+	/* top: -25% !important; */
+}
+
+.redlight-small,.bluelight-small{
+	width: 1090px;
+	height: 400px;
+	border-radius: 50%;
+	display: table-cell;
+	vertical-align: middle;
+	position: absolute;
+}
+
+.redlight{
+	background-color: red;
+	background: radial-gradient( rgba(255, 0, 0, 0.5) 0%, transparent 67% ,transparent 100%);
+	animation: redlight 1s infinite;
+	right: 40%;
+	bottom: -50%;
+}
+
+.bluelight{
+	background-color: blue;
+	background: radial-gradient( rgba(0, 0, 255, 0.5) 0%, transparent 67% ,transparent 100%);
+	animation: bluelight 1s infinite;
+	left: 40%;
+	top: -50%;
+}
+
+.redlight-small{
+	background-color: red;
+	background: radial-gradient( rgba(255, 0, 0, 0.25) 0%, transparent 67% ,transparent 100%);
+	animation: redlight-small 0.7s infinite;
+	right: -366px;
+	bottom: -200px;
+	transform: rotate(-10deg);
+}
+
+.bluelight-small{
+	background-color: blue;
+	background: radial-gradient( rgba(0, 0, 255, 0.25) 0%, transparent 67% ,transparent 100%);
+	animation: bluelight-small 0.7s infinite;
+	left: -300px;
+	top: -300px;
+	transform: rotate(-45deg);
+}
+
+.profile-link-container{
+	position: absolute;
+	top: 0;
+	display: table;
+	width: 100%;
+	height: 100%;
+	background: transparent;
+}
+
+.button-container{
+	display: table-cell;
+	vertical-align: middle;
+	text-align: center;
+}
+
+.arrow{
+	color:#fff;
+	cursor: pointer;
+	font-size: 64px;
+	z-index: 1;
+	text-decoration: none;
+	transition: transform 0.3s;
+}
+
+.arrow:hover{
+	transform: scale(1.2);
+}
+
+body {
+    background-color: #101010;
+    color: #fff;
+    font-family: Arial, sans-serif;
+    display: flex;
+    overflow: hidden;
+  }
+
+  form{
+		height: auto;
+		margin-bottom: 20px;
+	  /* margin-bottom: 20px; */
+      width: 400px;
+      background-color: rgba(255,255,255,0.13);
+      position: absolute;
+      transform: translate(-50%,-50%);
+      top: 50%;
+      left: 50%;
+      border-radius: 10px;
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(255,255,255,0.1);
+      box-shadow: 0 0 40px rgba(8,7,16,0.6);
+      padding: 0 50px;
+  }
+  form *{
+      font-family: 'Poppins',sans-serif;
+      color: #ffffff;
+      letter-spacing: 0.5px;
+      outline: none;
+      border: none;
+	  height: calc(auto + 20px);
+  }
+  form h3{
+      font-size: 32px;
+      font-weight: 500;
+      line-height: 42px;
+      text-align: center;
+  }
+  
+  label{
+      display: block;
+      margin-top: 30px;
+      font-size: 16px;
+      font-weight: 500;
+  }
+  input{
+      display: block;
+      height: 50px;
+      width: 95%;
+      background-color: rgba(255,255,255,0.07);
+      border-radius: 3px;
+      padding: 0 10px;
+      margin-top: 20px;
+      font-size: 14px;
+      font-weight: 300;
+  }
+  ::placeholder{
+      color: #e5e5e5;
+  }
+  button{
+      margin-top: 50px;
+      width: 100%;
+      background-color: #ffffff;
+      color: #080710;
+      padding: 15px 0;
+      font-size: 18px;
+      font-weight: 600;
+      border-radius: 5px;
+      cursor: pointer;
+  }
+  form .input-container {
+	position: relative;
+	margin-bottom: 30px;
+  }
+
+  label {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    transition: 0.2s ease all;
+}
+
+.form-group {
+    position: relative;
+    margin-top: 30px;
+}
+
+.form-label {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translate(0, -50%);
+    pointer-events: none;
+    transition: 0.2s ease all;
+}
+
+.form-group input:focus + .form-label,
+.form-group input:not(:placeholder-shown) + .form-label {
+    top: -20px;
+	left: 10px;
+    font-size: 12px;
+    color: #ffffff;
+}
+
+.has-value + .form-label {
+    top: -20px;
+    font-size: 12px;
+    color: #ffffff;
+}
+
+  .social{
+    margin-top: 30px;
+    display: flex;
+	padding-bottom: 30px;
+  }
+  .social div{
+    background: red;
+    width: 150px;
+    border-radius: 3px;
+    padding: 5px 10px 10px 5px;
+    background-color: rgba(255,255,255,0.27);
+    color: #eaf0fb;
+    text-align: center;
+  }
+  .social div:hover{
+    background-color: rgba(255,255,255,0.47);
+  }
+  .social .fb{
+    margin-left: 25px;
+  }
+  .social i{
+    margin-right: 4px;
+  }
+
+  .error-message {
+    position: relative;
+    background-color: #f90b0b9d;
+    border: 1px solid #fcc2c3;
+    padding: 20px 30px;
+    margin-bottom: 10px; /* Pievieno atstarpi starp kļūdasW ziņojumiem */
+    clear: both; /* Notīra peldošo efektu, lai kļūdas ziņojumi nepārklājas ar citiem elementiem */
+    width: 470px;
+    left: 65%;
+  }
+  .successful_messages{
+	position: relative;
+    background-color: #1ff90b9d;
+    border: 1px solid #c6fcc2;
+    padding: 20px 30px;
+    margin-bottom: 10px; /* Pievieno atstarpi starp kļūdas ziņojumiem */
+    clear: both; /* Notīra peldošo efektu, lai kļūdas ziņojumi nepārklājas ar citiem elementiem */
+    width: 470px;
+    left: 65%;
+  }
+  
+  a {
+	display: block;
+	color: white;
+	text-decoration: none;
+  }
+
+  button {
+	display: block;
+	color: white;
+	text-decoration: none;
+  }
+  
+  .testing {
+	  display: block;
+	  position: relative;
+	  background: none;
+	  border: none;
+	  outline: none;
+	  cursor: pointer;
+	  margin-top: 50px;
+	  padding: 15px 30px;
+	  font-size: .75em;
+	  letter-spacing: .50em;
+	  text-align: center;
+	  text-transform: uppercase;
+	  border: 1px solid hsla(0,0%,100%,.2);
+	  transition: all .2s ease;
+	  margin: 0 auto 30px;
+	  margin-top: 30px;
+	  
+	
+	  &:before, 
+	  &:after {
+		content: 'Register';
+		position: absolute;
+		  top: 0;
+		  left: 0;
+		padding: 8px 0;
+		width: 100%;
+		-webkit-clip: rect(0px, 0px, 0px, 0px);
+		clip: rect(0px, 0px, 0px, 0px);
+		background: #fff;
+		color: #000;
+	  }
+	  
+	  &:before {
+		left: -3px;
+		top: -2px;
+		text-shadow: 2px 0 #fff;
+		box-shadow: 2px 0 #fff;
+	  }
+	
+	  &:after {
+		left: 2px;
+		bottom: -2px;
+		text-shadow: -1px 0 #fff;
+		box-shadow: -1px 0 #fff;
+	  }
+	
+	  &:hover {
+		background: white;
+		color: black;
+	  }
+	
+	  &:hover:before {
+		  animation: glitch-test 1.5s infinite linear alternate-reverse;
+	  }
+	  
+	  &:hover:after {
+		  animation: glitch-test 2s infinite linear alternate;
+	  }
+	
+  }
+  
+  @keyframes glitch-test {
+	0% {
+	  clip: rect(-3px, 600px, 0px, 0px);
+	}
+	5.88235% {
+	  clip: rect(0px, 600px, 0px, 0px);
+	}
+	11.76471% {
+	  clip: rect(-3px, 600px, 0px, 0px);
+	}
+	17.64706% {
+	  clip: rect(-3px, 600px, 0px, 0px);
+	}
+	23.52941% {
+	  clip: rect(100px, 600px, 100px, 0px);
+	}
+	29.41176% {
+	  clip: rect(0px, 600px, 600px, 0px);
+	}
+	35.29412% {
+	  clip: rect(100px, 600px, 0px, 0px);
+	}
+	41.17647% {
+	  clip: rect(0px, 600px, 600px, 0px);
+	}
+	47.05882% {
+	  clip: rect(100px, 600px, 0px, 0px);
+	}
+	52.94118% {
+	  clip: rect(-3px, 600px, 0px, 0px);
+	}
+	58.82353% {
+	  clip: rect(100px, 450px,100px, 0px);
+	}
+	64.70588% {
+	  clip: rect(0px, 450px, 0px, 0px);
+	}
+	70.58824% {
+	  clip: rect(100px, 450px, 100px, 0px);
+	}
+	76.47059% {
+	  clip: rect(0px, 450px, 0px, 0px);
+	}
+	82.35294% {
+	  clip: rect(0px, 450px, 0px, 0px);
+	}
+	88.23529% {
+	  clip: rect(0px, 450px, 0px, 0px);
+	}
+	94.11765% {
+	  clip: rect(0px, 450px, 0px, 0px);
+	}
+	100% {
+	  clip: rect(0px, 450px, 0px, 0px);
+	}
+  }
+  
+  
+  .title{
+	font-family: monospace;
+	margin: auto;
+	color: white;
+	padding: 10%;
+  }
+  
+  #title{
+	text-align: center;
+	text-transform: uppercase;
+	font-size : 4em;
+	border-bottom : solid 1px white;
+  }
+  
+  #text{
+	text-align: left;
+	font-size : 1.25em;
+	text-transform: lowercase;
+  }
+
+  .social {
+	margin-top: 30px;
+	display: flex;
+	justify-content: center; /* Horizontāla centrēšana */
+  }
+  
+  .social div {
+	background: rgba(255, 255, 255, 0.27);
+	color: #eaf0fb;
+	text-align: center;
+	border-radius: 3px;
+	padding: 10px;
+	margin: 0 10px; /* Atstarpes starp pogām */
+	cursor: pointer;
+	display: flex;
+	align-items: center; /* Vertikāla centrēšana */
+	transition: background-color 0.3s ease;
+  }
+  
+  .social div:hover {
+	background-color: rgba(255, 255, 255, 0.47);
+  }
+  
+  .social div i {
+	margin-right: 25px;
+  }
+  
+  .social div span {
+	margin-left: 4px;
+	font-size: 14px;
+  }
+  
+  .social div {
+	position: relative;
+	overflow: hidden;
+  }
+  
+  .social div {
+	position: relative;
+	overflow: hidden;
+  }
+  
+  .social div::before,
+  .social div::after {
+	content: "";
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	border: 2px solid transparent;
+  }
+  
+  .social div::before {
+	top: -2px;
+	left: -2px;
+  }
+  
+  .social div::after {
+	bottom: -2px;
+	right: -2px;
+  }
+  
+  .snake-animation {
+	animation: snake-animation 4s infinite;
+  }
+  
+  @keyframes snake-animation {
+	0% {
+	  border-color: transparent;
+	}
+	25% {
+	  border-color: red;
+	}
+	50% {
+	  border-color: transparent;
+	}
+	75% {
+	  border-color: blue;
+	}
+	100% {
+	  border-color: transparent;
+	}
+  }
+
+  .forget{
+	animation: glitch 1s linear infinite;
+	text-align: right;
+	margin-top: 15px;
+  }
+
+  .forgett{
+	animation: glitch 1s linear infinite;
+	text-align: center;
+	margin-top: 15px;
+	padding-bottom: 20px;
+  }
+  
+  @keyframes glitch{
+	2%,64%{
+	  transform: translate(2px,0) skew(0deg);
+	}
+	4%,60%{
+	  transform: translate(-2px,0) skew(0deg);
+	}
+	62%{
+	  transform: translate(0,0) skew(5deg); 
+	}
+  }
+  
+  .forget:before,
+  .forget:after{
+	content: attr(title);
+	position: absolute;
+	right: 0;
+  }
+  
+  .forget:before{
+	animation: glitchTop 1s linear infinite;
+	clip-path: polygon(0 0, 100% 0, 100% 33%, 0 33%);
+	-webkit-clip-path: polygon(0 0, 100% 0, 100% 33%, 0 33%);
+  }
+  .forgett:before,
+  .forgett:after{
+	content: attr(title);
+	position: absolute;
+	right: 0;
+  }
+  
+  .forgett:before{
+	animation: glitchTop 1s linear infinite;
+	clip-path: polygon(0 0, 100% 0, 100% 33%, 0 33%);
+	-webkit-clip-path: polygon(0 0, 100% 0, 100% 33%, 0 33%);
+  }
+  
+  @keyframes glitchTop{
+	2%,64%{
+	  transform: translate(2px,-2px);
+	}
+	4%,60%{
+	  transform: translate(-2px,2px);
+	}
+	62%{
+	  transform: translate(13px,-1px) skew(-13deg); 
+	}
+  }
+  
+  .forget:after{
+	animation: glitchBotom 1.5s linear infinite;
+	clip-path: polygon(0 67%, 100% 67%, 100% 100%, 0 100%);
+	-webkit-clip-path: polygon(0 67%, 100% 67%, 100% 100%, 0 100%);
+	text-align: right;
+  }
+
+  .forgett:after{
+	animation: glitchBotom 1.5s linear infinite;
+	clip-path: polygon(0 67%, 100% 67%, 100% 100%, 0 100%);
+	-webkit-clip-path: polygon(0 67%, 100% 67%, 100% 100%, 0 100%);
+	text-align: right;
+  }
+  
+  @keyframes glitchBotom{
+	2%,64%{
+	  transform: translate(-2px,0);
+	}
+	4%,60%{
+	  transform: translate(-2px,0);
+	}
+	62%{
+	  transform: translate(-22px,5px) skew(21deg); 
+	}
+  }
+
+  .toggle-password {
+	position: relative;
+	top: -33px;
+	left: 410px;
+	display: inline-block;
+	width: 24px;
+	height: 24px;
+	background: url(path/to/eye-icon.png) no-repeat center;
+	cursor: pointer;
+}
+
+.toggle-password.visible {
+	background: url(path/to/eye-slash-icon.png) no-repeat center;
+}

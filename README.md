@@ -1,2 +1,0 @@
-# mafia
-game-mafia-website
