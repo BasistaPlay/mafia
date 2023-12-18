@@ -447,7 +447,7 @@ section {
 	text-align: center;
 	height: 200%;
 	padding: 0 30%;
-	margin-right: 600px;
+	margin-right: 550px;
 }
 
 a {
@@ -473,7 +473,7 @@ a {
 	justify-content: center;
 	border: 1px solid hsla(0, 0%, 100%, 0.2);
 	transition: all 0.2s ease;
-	margin: 120px 0 -70px;
+	margin: 150px 0 -70px;
 
 	&:before,
 	&:after {

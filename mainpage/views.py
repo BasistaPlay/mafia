@@ -201,7 +201,6 @@ def reset_password(request, uidb64, token):
         'error_messages': error_messages,
     })
 
-
 def handler404(request, exception):
     return render(request, 'error.html', {'code': 404, 'message': 'Not Found'}, status=404)
 

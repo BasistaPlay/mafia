@@ -17,7 +17,7 @@ socket.addEventListener('message', (event) => {
     const data = JSON.parse(event.data);
 
     if (data.type === 'room_update') {
-        roomListBody.innerHTML = '';
+        roomListBody.innerHTML = ''; // Notīram esošo sarakstu
 
         data.rooms.forEach((room) => {
             if (room.player_count !== room.max_players) {

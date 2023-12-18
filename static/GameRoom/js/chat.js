@@ -5,9 +5,8 @@ document.addEventListener('DOMContentLoaded', function () {
         const roomCode = $('#roomCode').data('room-code');
 
         // Izveidojiet WebSocket savienojumu
-        const wsProtocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://'
         const socket = new WebSocket(
-            wsProtocol + window.location.host + `/ws/chat/${roomCode}/`
+            'ws://' + window.location.host + `/ws/chat/${roomCode}/`
         );
 
         // Atverot WebSocket savienojumu
