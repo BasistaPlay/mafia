@@ -1,6 +1,6 @@
 env/
 venv/
 . role_images/
-MafiaWebsite/settings.py
-db.sqlite3
 static/
+MafiaWebsite/local_settings.py
+db.sqlite3

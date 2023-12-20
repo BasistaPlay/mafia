@@ -30,6 +30,7 @@ urlpatterns = [
     path('register/', register, name='register'),
     path('login/', login_view, name='login'),
     path('accounts/', include('allauth.urls')),
+    path('accounts/', include('allauth.socialaccount.urls')),
 
     # Aizmirsu paroli
     path('forgot_password/', views.forgot_password, name='forgot_password'),

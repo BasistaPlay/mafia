@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-@3c25l29hzhu$811**&-lr955g-m49e6d0*)td#9#g6#ba%w$#
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['www.mafiawebsite.xyz', '146.190.48.255', 'mafiawebsite.xyz', 'mafia.lat',]
+ALLOWED_HOSTS = ['www.mafiawebsite.xyz', '146.190.48.255', 'mafiawebsite.xyz']
 
 
 # Application definition
@@ -42,20 +42,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_extensions',
 
-
-
     # my apps
-
     'mainpage',
     'GameRoom',
     'game',
-
-
-
     # alauth apps
-
     'django.contrib.messages',
-
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -140,6 +132,27 @@ AUTHENTICATION_BACKENDS = [
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
+LOGIN_REDIRECT_URL = '/'  # Jūsu vēlamais pāradresācijas URL pēc pieslēgšanās
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'APP': {
+            'client_id': '610028372985-ijsc0ip2r7bhvh3u07lb1iiupsno33rm.apps.googleusercontent.com',
+            'secret': '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',
+            'key': '',
+            'redirect_uri': 'http://localhost:8000/accounts/google/login/callback/'
+        },
+        'SCOPE': ['profile', 'email'],
+    },
+   'discord': {
+        'APP': {
+            'client_id': '1186998057536077888',
+            'secret': 'Jūsu_Discord_Client_Secret',
+        }
+    }
+}
+
+
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
@@ -169,17 +182,17 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 JAZZMIN_SETTINGS = {
     'site_title': 'Mafia',
     'site_header': 'Game',
-    'site_logo': '',
-    'welcome_sign': 'Welcome to Mafia',  # Customize the welcome message
-    'show_sidebar': True,  # Show the sidebar menu
-    'navigation_expanded': True,  # Expand all sections in the sidebar menu
-    'hide_apps': ["""'sites'"""],  # Hide specific apps from the admin sidebar
-    'show_ui_builder': False,  # Hide the UI Builder link in the top menu
-    'topmenu_links': [],  # Remove any custom links from the top menu
-    'usermenu_links': [],  # Remove any custom links from the user menu
-    'theme': 'home',  # Use the 'home' theme style
-    'icons': {  # Customize icons for specific models or apps
-        'app.Model': 'fas fa-icon',  # Replace 'app.Model' with your desired model
+    'site_logo': '/mainpage/img/Logo.png',
+    'welcome_sign': 'Welcome to Mafia',
+    'show_sidebar': True,
+    'navigation_expanded': True,
+    'hide_apps': ["""'sites'"""],
+    'show_ui_builder': False,
+    'topmenu_links': [],
+    'usermenu_links': [],
+    'theme': 'home',
+    'icons': {
+        'app.Model': 'fas fa-icon',
         'auth.User': 'fas fa-user',
         'gameroom.GameRoom': 'fas fa-door-open',
         'gameroom.Player': 'fas fa-users',
@@ -188,10 +201,10 @@ JAZZMIN_SETTINGS = {
         'mainpage.Profile': 'fas fa-id-card',
 
     },
-    # ... other customization options ...
 }
 
-SITE_ID = 1
+SITE_ID = 2
+SOCIALACCOUNT_LOGIN_ON_GET = True
 
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -201,3 +214,8 @@ EMAIL_HOST_USER = 'team@mafiawebsite.xyz'
 EMAIL_HOST_PASSWORD = 'Edvards!@#123'
 EMAIL_USE_SSL = True
 DEFAULT_FROM_EMAIL = 'WebsiteTitle <team@mafiawebsite.xyz>'
+
+try:
+    from MafiaWebsite.local_settings import *
+except ImportError:
+    pass
